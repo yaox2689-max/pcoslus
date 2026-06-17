@@ -1,0 +1,19 @@
+# Default code owners for the entire repository
+* @yaox2689-max
+
+# Backend
+/runtime/ @yaox2689-max
+/tests/ @yaox2689-max
+*.py @yaox2689-max
+
+# Frontend
+/frontend/ @yaox2689-max
+*.tsx @yaox2689-max
+*.ts @yaox2689-max
+
+# Configuration
+*.yaml @yaox2689-max
+*.yml @yaox2689-max
+
+# CI/CD
+/.github/ @yaox2689-max

@@ -1,287 +1,183 @@
-# PCOS Runtime v0.1
+<div align="center">
 
-Personal Cognitive Operating System - 像人一样思考的数字决策引擎
+# 🧠 PCOS
 
-## 什么是 PCOS？
+### Personal Cognitive Operating System
+
+**像人一样思考的数字决策引擎**
+
+[![CI](https://github.com/yaox2689-max/pcos/actions/workflows/ci.yml/badge.svg)](https://github.com/yaox2689-max/pcos/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Node 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
+
+[English](#english) · [中文](#中文) · [Documentation](docs/) · [Report Bug](https://github.com/yaox2689-max/pcos/issues/new?template=bug_report.yml) · [Request Feature](https://github.com/yaox2689-max/pcos/issues/new?template=feature_request.yml)
+
+</div>
+
+---
+
+## 中文
+
+### 什么是 PCOS？
 
 PCOS 不是一个普通的 AI 助手。它是一个**认知操作系统**：
 
 - **理解你的身份** - 价值观、偏好、决策模式
-- **建立世界模型** - 带置信度的信念系统，不是事实数据库
+- **建立世界模型** - 带置信度的信念系统
 - **混合思考** - 简单决策快速直觉，复杂决策深度分析
 - **价值对齐** - 每个决策都与你的核心价值观对齐
-- **持续学习** - 从经验中进化，记录决策轨迹
+- **持续学习** - 从经验中进化
 
-## 架构
-
-```
-User Input
-    ↓
-Context Builder (按话题过滤 beliefs，不全量加载)
-    ↓
-Prompt Builder (强制 JSON 输出)
-    ↓
-LLM (DeepSeek / Kimi / Qwen / MIMO)
-    ↓
-JSON 解析 + Journal + Trace
-    ↓
-Output
-```
-
-## 快速开始
-
-### 1. 安装
+### 快速开始
 
 ```bash
-# 使用 uv (推荐)
+# 1. 克隆仓库
+git clone https://github.com/yaox2689-max/pcos.git
+cd pcos
+
+# 2. 安装后端依赖
 uv sync
 
-# 或使用 pip
-pip install -e .
-```
+# 3. 配置环境变量
+cp .env.example .env
+# 编辑 .env，填入你的 API Key
 
-### 2. 配置
-
-编辑 `.env`：
-
-```bash
-# 选择模型
-LLM_PROVIDER=kimi
-
-# Kimi (Moonshot)
-KIMI_API_KEY=sk-your-key
-KIMI_BASE_URL=https://api.moonshot.cn/v1
-KIMI_MODEL=moonshot-v1-8k
-
-# DeepSeek
-DEEPSEEK_API_KEY=sk-your-key
-DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
-DEEPSEEK_MODEL=deepseek-chat
-
-# Qwen (通义千问)
-QWEN_API_KEY=sk-your-key
-QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-QWEN_MODEL=qwen-plus
-```
-
-### 3. 启动
-
-```bash
+# 4. 启动后端
 uv run uvicorn runtime.main:app --port 8001
+
+# 5. 安装前端依赖
+cd frontend
+npm install
+
+# 6. 启动前端
+npm run dev
 ```
 
-### 4. 测试
+访问 http://localhost:3000
+
+### 示例
 
 ```bash
-# 做决策
+# 做一个决策
 curl -X POST http://localhost:8001/decide/ \
   -H "Content-Type: application/json" \
-  -d '{"question": "Should I pivot from consulting to product?", "context": "3 months runway, 2 customers"}'
-
-# 模拟选项
-curl -X POST http://localhost:8001/decide/simulate \
-  -H "Content-Type: application/json" \
-  -d '{"question": "Should I raise funding?", "option": "Raise $500K seed"}'
-
-# 查看决策日志
-curl http://localhost:8001/decide/journal
-
-# 查看执行轨迹
-curl http://localhost:8001/decide/traces
+  -d '{"question": "Should I pivot from consulting to product?"}'
 ```
 
-## API 端点
-
-### 决策
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | `/decide/` | 做一个 PCOS 决策 |
-| POST | `/decide/simulate` | 模拟特定选项 |
-| GET | `/decide/journal` | 查看决策日志 |
-| GET | `/decide/journal/{id}` | 查看特定决策 |
-
-### 模型管理
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | `/decide/providers` | 查看当前模型 |
-| POST | `/decide/providers/{name}` | 切换模型 |
-
-### 系统
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | `/` | 服务信息 |
-| GET | `/health` | 健康检查 |
-| GET | `/decide/traces` | 执行轨迹 |
-
-## 决策输出示例
-
+响应：
 ```json
 {
   "thinking_mode": "slow",
-  "confidence": 0.7,
-  "recommendation": "Proceed with caution towards pivoting to a product-based approach",
-  "reasoning_chain": [
-    "Pivoting aligns with your value of creativity",
-    "Given the fast AI Agent market growth...",
-    "However, there is a high risk with limited runway..."
-  ],
-  "options_evaluated": [
-    {
-      "option": "remain in consulting",
-      "score": {
-        "value_alignment": 0.4,
-        "belief_support": 0.3,
-        "resource_feasibility": 0.8,
-        "risk_acceptability": 0.7,
-        "learning_potential": 0.5,
-        "weighted_total": 0.57
-      }
-    },
-    {
-      "option": "pivot to product",
-      "score": {
-        "value_alignment": 0.8,
-        "belief_support": 0.6,
-        "resource_feasibility": 0.4,
-        "risk_acceptability": 0.35,
-        "learning_potential": 0.8,
-        "weighted_total": 0.63
-      }
-    }
-  ],
-  "values_alignment": [
-    "自主性: Making independent choices",
-    "创造力: Crafting a new product",
-    "影响力: Having a more profound impact",
-    "持续学习: Learning through product development"
-  ],
-  "beliefs_used": [
-    "AI Agent market is rapidly growing",
-    "SME AI needs are unclear",
-    "LLM technology is fast iterating"
-  ],
-  "key_risks": ["Uncertainty in SME AI demand", "Limited runway"],
-  "key_assumptions": ["Pivoting will leverage market growth"]
+  "confidence": 0.75,
+  "recommendation": "先做咨询，验证市场后再做产品",
+  "value_conflicts": {
+    "gains": ["持续学习", "影响力"],
+    "losses": ["职业安全", "经济韧性"],
+    "dominant_conflict": "autonomy_vs_security"
+  },
+  "counter_argument": {
+    "position": "直接做产品可能更快验证市场",
+    "reasoning": "..."
+  }
 }
 ```
 
-## 文件结构
+### 支持的模型
+
+| 模型 | 提供商 | 状态 |
+|------|--------|------|
+| DeepSeek | DeepSeek | ✅ |
+| Kimi | Moonshot | ✅ |
+| Qwen | 阿里云 | ✅ |
+| MIMO | MIMO | ✅ |
+
+### 项目结构
 
 ```
-decision/
-├── pcos/                          # PCOS 配置
-│   ├── identity.yaml              # 身份模型 Schema
-│   ├── identity_data.yaml         # 用户身份数据
-│   ├── world_model.yaml           # 世界模型 Schema
-│   ├── world_model_data.yaml      # 信念数据
-│   ├── strategy_engine.yaml       # 战略引擎 Schema
-│   ├── decision_engine.yaml       # 决策引擎 Schema
-│   └── decision_benchmark.yaml    # 27 个测试场景
-│
-├── runtime/                       # PCOS Runtime
-│   ├── config.py                  # 配置加载
-│   ├── models.py                  # 数据模型
-│   ├── services/
-│   │   ├── claude_client.py       # 多模型统一客户端
-│   │   ├── context_builder.py     # 话题过滤
-│   │   ├── prompt_builder.py      # JSON 强制输出
-│   │   ├── decision_journal.py    # 决策日志 (SQLite)
-│   │   └── trace_logger.py        # 执行轨迹
-│   ├── routers/
-│   │   └── decide.py              # API 路由
-│   ├── db/
-│   │   └── pcos_v2.db             # SQLite 数据库
-│   └── traces/                    # 执行轨迹文件
-│
-├── tests/
-│   └── test_benchmark.py          # 基准测试
-│
-├── pyproject.toml                 # uv 配置
-├── .env                           # 环境变量
-└── README.md
+pcos/
+├── pcos/                    # 配置和 Schema
+├── runtime/                 # 后端运行时
+├── frontend/                # Next.js 前端
+├── research/                # 研究和分析
+└── tests/                   # 测试
 ```
 
-## 设计文档
+### 文档
 
-详细设计文档位于：
+- [设计文档](docs/superpowers/specs/2026-06-17-pcos-design.md)
+- [验证指南](VALIDATION_GUIDE.md)
+- [工作流指南](WORKFLOW_GUIDE.md)
+- [API 文档](http://localhost:8001/docs) (运行时访问)
 
-- `docs/superpowers/specs/2026-06-17-pcos-design.md` - 完整设计规范
-- `pcos/event_flow_trace.md` - 事件流追踪
-- `pcos/validation_report.md` - PCOS vs 普通 Claude 对比
+### 贡献
 
-## 核心概念
+欢迎贡献！请阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 了解详情。
 
-### 1. Identity First
+### 许可证
 
-决策首先对齐你的价值观：
+MIT License - 详见 [LICENSE](LICENSE)
 
-```yaml
-core_values:
-  - 自主性
-  - 创造力
-  - 影响力
-  - 持续学习
+---
+
+## English
+
+### What is PCOS?
+
+PCOS is not a regular AI assistant. It's a **cognitive operating system**:
+
+- **Understands your identity** - values, preferences, decision patterns
+- **Builds a world model** - belief system with confidence scores
+- **Mixed thinking** - fast intuition for simple decisions, deep analysis for complex ones
+- **Value alignment** - every decision aligns with your core values
+- **Continuous learning** - evolves from experience
+
+### Quick Start
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/yaox2689-max/pcos.git
+cd pcos
+
+# 2. Install backend dependencies
+uv sync
+
+# 3. Configure environment variables
+cp .env.example .env
+# Edit .env with your API keys
+
+# 4. Start backend
+uv run uvicorn runtime.main:app --port 8001
+
+# 5. Install frontend dependencies
+cd frontend
+npm install
+
+# 6. Start frontend
+npm run dev
 ```
 
-### 2. Belief System
+Visit http://localhost:3000
 
-世界模型存储的是**信念**，不是事实：
+### Documentation
 
-```yaml
-beliefs:
-  - content: "AI Agent market is growing"
-    confidence: 0.70
-    source: "user_declared"
-    evidence: [...]
-```
+- [Design Document](docs/superpowers/specs/2026-06-17-pcos-design.md)
+- [Validation Guide](VALIDATION_GUIDE.md)
+- [Workflow Guide](WORKFLOW_GUIDE.md)
+- [API Docs](http://localhost:8001/docs) (when running)
 
-### 3. Mixed Thinking
+### Contributing
 
-- **Fast Thinking**: 简单、低风险、有先例 → 1-2 个选项
-- **Slow Thinking**: 复杂、高风险、无先例 → 3+ 选项，含情景分析
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-### 4. Decision Journal
+### License
 
-每个决策记录完整中间状态，支持未来 Reflection Engine：
+MIT License - see [LICENSE](LICENSE) for details.
 
-```yaml
-context_snapshot: {...}
-values_used: [...]
-beliefs_used: [...]
-thinking_mode: "slow"
-decision: "..."
-confidence: 0.7
-```
+---
 
-## 路线图
+<div align="center">
 
-### v0.1 (当前)
-- ✅ 核心决策引擎
-- ✅ 多模型支持 (DeepSeek/Kimi/Qwen/MIMO)
-- ✅ 决策日志
-- ✅ 执行轨迹
+**Built with ❤️ by the PCOS community**
 
-### v0.2
-- [ ] 100+ 基准测试
-- [ ] Decision Simulator 增强
-- [ ] Identity Extraction Pipeline
-- [ ] 自动信念衰减
-
-### v0.3
-- [ ] Reflection Engine
-- [ ] Learning Engine
-- [ ] 策略引擎运行时
-- [ ] Web UI
-
-### v1.0
-- [ ] 多用户支持
-- [ ] 云端部署
-- [ ] API 文档
-- [ ] 插件系统
-
-## License
-
-MIT
+</div>
