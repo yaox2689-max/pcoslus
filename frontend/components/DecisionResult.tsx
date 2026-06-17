@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Lightbulb,
   AlertTriangle,
@@ -8,12 +9,16 @@ import {
   Scale,
   Target,
   Shield,
-  Zap
+  Zap,
+  CheckCircle,
+  Save,
+  Loader2
 } from 'lucide-react';
 
 interface DecisionResultProps {
   data: {
     decision_id: string;
+    question: string;
     thinking_mode: string;
     thinking_mode_reason: string;
     recommendation: string;
@@ -260,6 +265,147 @@ export default function DecisionResult({ data }: DecisionResultProps) {
               </li>
             ))}
           </ul>
+        </div>
+      </div>
+
+      {/* Record My Decision */}
+      <RecordDecision decisionId={data.decision_id} question={data.question} recommendation={data.recommendation} />
+    </div>
+  );
+}
+
+function RecordDecision({ decisionId, question, recommendation }: { decisionId: string; question: string; recommendation: string }) {
+  const [myDecision, setMyDecision] = useState('');
+  const [originalPlan, setOriginalPlan] = useState('');
+  const [reasoning, setReasoning] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [alignment, setAlignment] = useState<number | null>(null);
+
+  const handleSave = async () => {
+    if (!myDecision.trim()) return;
+
+    setSaving(true);
+    try {
+      // Calculate simple alignment
+      const recLower = recommendation.toLowerCase();
+      const myLower = myDecision.toLowerCase();
+      const recWords = recLower.split(/\s+/).slice(0, 5);
+      const matchCount = recWords.filter(w => myLower.includes(w)).length;
+      const alignScore = matchCount / Math.min(recWords.length, 5);
+      setAlignment(alignScore);
+
+      // Save to backend (we'll add this endpoint later)
+      setSaved(true);
+    } catch (error) {
+      console.error('Failed to save decision:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (saved) {
+    return (
+      <div className="bg-sage-50 rounded-2xl border border-sage-200 p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <CheckCircle className="w-6 h-6 text-sage-600" />
+          <h3 className="font-serif text-lg font-bold text-sage-800">已记录你的决定</h3>
+        </div>
+        <div className="space-y-2 text-sm text-sage-700">
+          <p><span className="font-medium">你的选择：</span>{myDecision}</p>
+          {originalPlan && <p><span className="font-medium">原计划：</span>{originalPlan}</p>}
+          {reasoning && <p><span className="font-medium">理由：</span>{reasoning}</p>}
+          {alignment !== null && (
+            <p>
+              <span className="font-medium">与 PCOS 对齐度：</span>
+              <span className={alignment > 0.6 ? 'text-sage-600' : 'text-warm-600'}>
+                {Math.round(alignment * 100)}%
+              </span>
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-warm-100 overflow-hidden">
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-warm-100 flex items-center justify-center">
+            <CheckCircle className="w-5 h-5 text-warm-600" />
+          </div>
+          <div>
+            <h3 className="font-serif text-lg font-bold text-warm-800">记录你的决定</h3>
+            <p className="text-sm text-warm-500">PCOS 给出了建议，最终决定权在你</p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {/* Original plan */}
+          <div>
+            <label className="block text-sm font-medium text-warm-700 mb-2">
+              在看到 PCOS 分析之前，你原本的计划是什么？
+            </label>
+            <input
+              type="text"
+              value={originalPlan}
+              onChange={(e) => setOriginalPlan(e.target.value)}
+              placeholder="例如：我本来想选 A"
+              className="w-full px-4 py-3 bg-warm-50 border border-warm-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-warm-300 text-warm-800 placeholder:text-warm-300"
+            />
+          </div>
+
+          {/* My decision */}
+          <div>
+            <label className="block text-sm font-medium text-warm-700 mb-2">
+              <span className="text-red-500">*</span> 你最终的决定是什么？
+            </label>
+            <textarea
+              value={myDecision}
+              onChange={(e) => setMyDecision(e.target.value)}
+              placeholder="告诉我你的最终选择..."
+              className="w-full h-24 px-4 py-3 bg-warm-50 border border-warm-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-warm-300 text-warm-800 placeholder:text-warm-300 resize-none"
+            />
+          </div>
+
+          {/* Reasoning */}
+          <div>
+            <label className="block text-sm font-medium text-warm-700 mb-2">
+              为什么做出这个决定？（可选）
+            </label>
+            <textarea
+              value={reasoning}
+              onChange={(e) => setReasoning(e.target.value)}
+              placeholder="你的思考过程..."
+              className="w-full h-20 px-4 py-3 bg-warm-50 border border-warm-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-warm-300 text-warm-800 placeholder:text-warm-300 resize-none"
+            />
+          </div>
+
+          {/* Save button */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleSave}
+              disabled={!myDecision.trim() || saving}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                myDecision.trim() && !saving
+                  ? 'bg-gradient-to-r from-sage-400 to-sage-500 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]'
+                  : 'bg-warm-100 text-warm-300 cursor-not-allowed'
+              }`}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>保存中...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  <span>记录我的决定</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
