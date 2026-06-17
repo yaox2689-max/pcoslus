@@ -1,0 +1,331 @@
+# ============================================================
+# PCOS Strategy Engine Schema
+# Version: MVP
+# Description: Strategic direction formation and resource allocation
+# Position: Connects "what is true" (World Model) + "what I want"
+#           (Identity) to "what to do" (Decision)
+# ============================================================
+
+schema:
+  version: "mvp"
+  type: "strategy_engine"
+  description: "From beliefs and values to strategic direction"
+
+# ─────────────────────────────────────────────────────────────
+# Strategy Formation Process
+# Strategy is NOT a plan. Strategy is a DIRECTION with constraints.
+# Plan comes later (Planning state). Strategy answers: "Where to play, how to win"
+# ─────────────────────────────────────────────────────────────
+strategy_formation:
+
+  inputs:
+    required:
+      - source: "identity_core"
+        items: ["core_values", "current_focus", "known_preferences"]
+      - source: "world_model"
+        items: ["relevant_beliefs", "confidence_scores", "contradictions"]
+      - source: "decision_engine"
+        items: ["recommended_direction", "alternatives"]
+      - source: "user"
+        items: ["confirmed_direction"]
+
+    optional:
+      - source: "decision_log"
+        items: ["similar_past_decisions"]
+      - source: "external"
+        items: ["market_signals"]
+
+  process:
+    steps:
+      - id: "frame"
+        description: "Frame the strategic question clearly"
+        output: "strategic_question"
+      - id: "options"
+        description: "Generate strategic options (from Decision Engine)"
+        output: "strategic_options"
+      - id: "evaluate"
+        description: "Evaluate each option against criteria"
+        output: "evaluated_options"
+      - id: "recommend"
+        description: "Recommend direction with reasoning"
+        output: "recommendation"
+      - id: "confirm"
+        description: "User confirms or adjusts"
+        output: "confirmed_strategy"
+
+# ─────────────────────────────────────────────────────────────
+# Strategy Output Structure
+# ─────────────────────────────────────────────────────────────
+strategy:
+  schema:
+    id:
+      type: "string"
+      format: "uuid"
+    strategic_question:
+      type: "string"
+      description: "The question this strategy answers"
+      example: "How should I enter the AI Agent market for SMEs?"
+    direction:
+      type: "string"
+      required: true
+      description: "Clear strategic direction in one sentence"
+      example: "Start with consulting to learn the market, then build product"
+    reasoning_chain:
+      type: "list[string]"
+      description: "Auditable chain of reasoning"
+      example:
+        - "World Model coverage is only 0.55 → don't build product yet"
+        - "Identity value 'continuous learning' → prioritize learning"
+        - "Resource constraint: limited time → need fast feedback loop"
+        - "Therefore: consulting first, product second"
+    alternatives_rejected:
+      type: "list[RejectedAlternative]"
+      description: "What was considered and why it was rejected"
+    created_at:
+      type: "datetime"
+    status:
+      type: "enum"
+      values:
+        - "active"
+        - "paused"
+        - "completed"
+        - "abandoned"
+
+rejected_alternative:
+  schema:
+    direction:
+      type: "string"
+    rejection_reason:
+      type: "string"
+    reconsider_if:
+      type: "string"
+      description: "Under what conditions to reconsider this alternative"
+
+# ─────────────────────────────────────────────────────────────
+# Success Criteria
+# How we know if the strategy is working
+# ─────────────────────────────────────────────────────────────
+success_criteria:
+  schema:
+    metric:
+      type: "string"
+      required: true
+      description: "What to measure"
+      example: "Number of paying customers"
+    target:
+      type: "string"
+      required: true
+      description: "Target value (natural language)"
+      example: "3 paying customers"
+    timeframe:
+      type: "string"
+      required: true
+      description: "When to achieve this"
+      example: "Within 3 months"
+    is_leading:
+      type: "boolean"
+      description: "Leading indicator (predictive) vs lagging indicator (outcome)"
+      example: true
+    measurement_method:
+      type: "string"
+      description: "How to measure this"
+      example: "Count customers with active contracts"
+
+  constraints:
+    min_criteria: 2
+    max_criteria: 7
+    must_have_leading: true
+    reason: "Leading indicators enable early course correction"
+
+# ─────────────────────────────────────────────────────────────
+# Resource Allocation
+# How to distribute limited resources across the strategy
+# ─────────────────────────────────────────────────────────────
+resource_allocation:
+  schema:
+    resource_type:
+      type: "enum"
+      values: ["money", "time", "skill", "network", "reputation"]
+    allocation_percentage:
+      type: "float"
+      range: [0.0, 100.0]
+    justification:
+      type: "string"
+      description: "Why this allocation"
+    flexibility:
+      type: "enum"
+      values:
+        - "fixed"        # Cannot be reallocated
+        - "flexible"     # Can shift ±20%
+        - "fluid"        # Can shift freely
+    reallocation_trigger:
+      type: "string"
+      description: "When to reconsider this allocation"
+
+  constraints:
+    total_must_equal_100: true
+    min_allocation_percentage: 5.0
+    max_allocations: 8
+    reason: "More than 8 allocations means no real focus"
+
+# ─────────────────────────────────────────────────────────────
+# Timeline
+# Strategy has phases, not just deadlines
+# ─────────────────────────────────────────────────────────────
+timeline:
+  schema:
+    phases:
+      type: "list[Phase]"
+      min_items: 1
+      max_items: 5
+
+  phase:
+    schema:
+      name:
+        type: "string"
+        required: true
+        example: "Market Validation"
+      duration:
+        type: "string"
+        required: true
+        example: "3 months"
+      objective:
+        type: "string"
+        required: true
+        example: "Validate that SMEs will pay for AI Agent services"
+      deliverable:
+        type: "string"
+        description: "Concrete output at end of phase"
+        example: "3 paying customers + documented learnings"
+      exit_criteria:
+        type: "string"
+        description: "What must be true to proceed to next phase"
+        example: "At least 1 paying customer and validated pricing"
+      is_checkpoint:
+        type: "boolean"
+        default: true
+        description: "If true, system pauses for user review before next phase"
+
+# ─────────────────────────────────────────────────────────────
+# Stop Loss
+# When to abandon the strategy. Critical for resource protection.
+# ─────────────────────────────────────────────────────────────
+stop_loss:
+  schema:
+    conditions:
+      type: "list[StopCondition]"
+      min_items: 1
+      description: "At least one stop condition required"
+    review_frequency:
+      type: "string"
+      default: "monthly"
+      description: "How often to review stop conditions"
+    requires_user_confirmation:
+      type: "boolean"
+      default: true
+      description: "Stop loss always requires user confirmation"
+    action_on_trigger:
+      type: "enum"
+      values:
+        - "pause_and_reassess"
+        - "pivot"
+        - "abandon"
+        - "escalate_to_user"
+
+  stop_condition:
+    schema:
+      condition:
+        type: "string"
+        required: true
+        description: "What triggers the stop"
+        example: "Zero paying customers after 3 months"
+      severity:
+        type: "enum"
+        values:
+          - "warning"     # Flag for review
+          - "critical"    # Strong recommendation to stop
+          - "absolute"    # Must stop
+      rationale:
+        type: "string"
+        description: "Why this is a stop condition"
+
+# ─────────────────────────────────────────────────────────────
+# Milestones
+# Checkpoints for progress tracking
+# ─────────────────────────────────────────────────────────────
+milestones:
+  schema:
+    name:
+      type: "string"
+      required: true
+    target_date:
+      type: "datetime"
+    success_metric:
+      type: "string"
+      required: true
+    is_checkpoint:
+      type: "boolean"
+      default: false
+      description: "If true, system pauses for user review"
+    dependencies:
+      type: "list[string]"
+      description: "Other milestones that must complete first"
+    risk_if_missed:
+      type: "string"
+      description: "What happens if this milestone is missed"
+
+# ─────────────────────────────────────────────────────────────
+# Strategy Revision Rules
+# When and how to revise an active strategy
+# ─────────────────────────────────────────────────────────────
+revision:
+  triggers:
+    - condition: "stop_loss condition met"
+      action: "immediate review"
+    - condition: "milestone missed by >50% of timeframe"
+      action: "review and adjust"
+    - condition: "World Model belief with high impact updated"
+      action: "assess impact on strategy"
+    - condition: "new opportunity with higher alignment score"
+      action: "present to user for consideration"
+    - condition: "user requests revision"
+      action: "begin revision process"
+
+  process:
+    steps:
+      - "Assess what changed (World Model diff)"
+      - "Identify affected strategy components"
+      - "Generate revision options"
+      - "Present to user with trade-offs"
+      - "Update strategy if approved"
+      - "Record revision in Strategy history"
+
+# ─────────────────────────────────────────────────────────────
+# Integration Points
+# ─────────────────────────────────────────────────────────────
+integration:
+  provides_to:
+    planning:
+      - "direction for plan creation"
+      - "success_criteria for plan metrics"
+      - "resource_allocation for task prioritization"
+      - "timeline for scheduling"
+      - "stop_loss for risk monitoring"
+    decision_engine:
+      - "strategic context for future decisions"
+      - "resource constraints for feasibility checks"
+    execution:
+      - "milestones for progress tracking"
+      - "stop_loss for early warning"
+
+  receives_from:
+    world_model:
+      - "beliefs for evaluation"
+      - "confidence for risk assessment"
+    identity_core:
+      - "values for alignment scoring"
+      - "preferences for style adaptation"
+    planning:
+      - "plan revisions that may affect strategy"
+    execution:
+      - "progress data for strategy validation"

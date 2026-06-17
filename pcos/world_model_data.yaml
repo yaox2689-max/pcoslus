@@ -1,0 +1,85 @@
+# PCOS World Model Data (Actual Beliefs)
+# This is the actual belief data, not the schema
+
+beliefs:
+  - id: "b-001"
+    content: "AI Agent市场正在快速增长"
+    confidence: 0.70
+    source: "user_declared"
+    evidence:
+      - content: "多篇文章提到AI Agent趋势"
+        strength: "moderate"
+        source: "articles"
+        timestamp: "2026-06-01"
+    assumptions: ["增长可持续"]
+    created_at: "2026-06-01"
+    last_validated: "2026-06-15"
+    status: "active"
+
+  - id: "b-002"
+    content: "中小企业AI需求不明确"
+    confidence: 0.40
+    source: "system_inferred"
+    evidence:
+      - content: "从技术趋势推断"
+        strength: "weak"
+        source: "inference"
+        timestamp: "2026-06-01"
+    assumptions: ["需求会逐渐明确"]
+    created_at: "2026-06-01"
+    last_validated: "2026-06-10"
+    status: "active"
+
+  - id: "b-003"
+    content: "X公司是直接竞争者"
+    confidence: 0.60
+    source: "user_declared"
+    evidence:
+      - content: "用户观察到的产品"
+        strength: "moderate"
+        source: "observation"
+        timestamp: "2026-06-05"
+    assumptions: ["竞争关系持续"]
+    created_at: "2026-06-05"
+    last_validated: "2026-06-15"
+    status: "active"
+
+  - id: "b-004"
+    content: "LLM技术快速迭代"
+    confidence: 0.80
+    source: "external"
+    evidence:
+      - content: "OpenAI/Anthropic持续发布新模型"
+        strength: "strong"
+        source: "news"
+        timestamp: "2026-06-15"
+    assumptions: ["迭代速度保持"]
+    created_at: "2026-06-01"
+    last_validated: "2026-06-15"
+    status: "active"
+
+  - id: "b-005"
+    content: "中小企业付费意愿有限"
+    confidence: 0.50
+    source: "user_assumption"
+    evidence:
+      - content: "用户直觉"
+        strength: "weak"
+        source: "intuition"
+        timestamp: "2026-06-01"
+    assumptions: ["付费意愿会随市场成熟提高"]
+    created_at: "2026-06-01"
+    last_validated: "2026-06-10"
+    status: "active"
+
+contradictions:
+  - id: "c-001"
+    belief_a: "b-001"
+    belief_b: "b-005"
+    description: "市场增长与付费意愿有限之间的张力"
+    status: "unresolved"
+
+blind_spots:
+  - "无中小企业AI需求的直接调研数据"
+  - "无竞争对手详细分析"
+  - "无用户访谈数据"

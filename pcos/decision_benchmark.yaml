@@ -1,0 +1,678 @@
+# PCOS Decision Benchmark
+# 20+ scenarios for validating PCOS decision-making
+# Each scenario tests different aspects of the system
+
+benchmark:
+  version: "1.0"
+  description: "Decision scenarios for PCOS validation"
+  evaluation_criteria:
+    - "Did PCOS select appropriate thinking mode (Fast/Slow)?"
+    - "Did PCOS consider relevant beliefs from World Model?"
+    - "Did PCOS align decision with Identity Core values?"
+    - "Did PCOS evaluate options using the 5 criteria framework?"
+    - "Did PCOS identify key assumptions and risks?"
+
+scenarios:
+
+  # ─────────────────────────────────────────────────────────────
+  # MARKET & STRATEGY DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S01"
+    category: "market_entry"
+    context: |
+      You've been running an AI consulting business for 3 months.
+      You have 2 paying customers. You've discovered that SMEs need
+      "quick deployment" not "technical assessment". The AI Agent
+      market is growing rapidly. Your competitor X just raised $5M.
+    decision: "Should you pivot from consulting to building an AI Agent product?"
+    options:
+      - "A) Pivot fully to product now"
+      - "B) Continue consulting, build product in parallel (30% time)"
+      - "C) Continue consulting only, delay product"
+    constraints:
+      - "3 months runway left"
+      - "1 person team"
+      - "2 current consulting clients"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Resource constraint: only 3 months runway"
+      - "Competitor raised $5M, competitive pressure increasing"
+      - "Consulting provides income + market learning"
+      - "Full pivot is high risk with limited runway"
+      - "Parallel approach balances learning and income"
+
+  - id: "S02"
+    category: "market_entry"
+    context: |
+      You're evaluating two potential markets for your AI Agent:
+      Market A: Enterprise HR automation (large market, long sales cycles)
+      Market B: SME customer service (growing market, short sales cycles)
+      Your background is in technical engineering, not sales.
+    decision: "Which market should you focus on?"
+    options:
+      - "A) Market A: Enterprise HR"
+      - "B) Market B: SME Customer Service"
+      - "C) Serve both markets"
+    constraints:
+      - "Limited sales experience"
+      - "Need revenue within 2 months"
+      - "Technical strength, weak on business development"
+    expected_thinking: "slow"
+    key_considerations:
+      - "SME market has shorter sales cycles (matches time constraint)"
+      - "Enterprise requires sales skills (user's weakness)"
+      - "Serving both dilutes focus"
+      - "User's technical strength is more leverageable in SME market"
+
+  - id: "S03"
+    category: "opportunity"
+    context: |
+      A potential client offers a large contract: build a custom AI
+      solution for their internal process. Payment: $50K over 3 months.
+      This would extend your runway significantly. However, it's
+      custom work that won't lead to a reusable product.
+    decision: "Should you take this contract?"
+    options:
+      - "A) Take the contract fully"
+      - "B) Negotiate to include reusable components"
+      - "C) Decline, focus on product"
+    constraints:
+      - "3 months runway remaining"
+      - "Goal is to build a product company"
+      - "Custom work delays product development"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Runway extension is critical (survival)"
+      - "Custom work doesn't build product equity"
+      - "Negotiation for reusable components is middle ground"
+      - "Values: 'autonomy' vs 'security' tension"
+
+  # ─────────────────────────────────────────────────────────────
+  # PRODUCT DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S04"
+    category: "product"
+    context: |
+      You're building an AI Agent platform. Users are requesting
+      these features: (1) Multi-language support, (2) Custom
+      workflow builder, (3) Analytics dashboard, (4) API integration.
+      You can only build 2 in the next sprint.
+    decision: "Which 2 features should you build?"
+    options:
+      - "A) Multi-language + Custom workflow"
+      - "B) Custom workflow + Analytics"
+      - "C) Analytics + API integration"
+      - "D) Custom workflow + API integration"
+    constraints:
+      - "2-week sprint"
+      - "2 developers"
+      - "Current users are mostly English-speaking"
+      - "No existing API"
+    expected_thinking: "fast"
+    key_considerations:
+      - "Current users are English (multi-language lower priority)"
+      - "Custom workflow is most requested"
+      - "API integration enables ecosystem"
+      - "Analytics is nice-to-have for current stage"
+
+  - id: "S05"
+    category: "product"
+    context: |
+      Your AI Agent product has 100 users. 20% are very active,
+      80% signed up but rarely use it. The active users love the
+      automation features. The inactive users say it's "too complex".
+    decision: "Should you simplify the product or double down on power users?"
+    options:
+      - "A) Simplify for mass market"
+      - "B) Double down on power users"
+      - "C) Build two versions (simple + advanced)"
+    constraints:
+      - "Limited engineering resources"
+      - "Need to grow user base"
+      - "Power users provide better feedback"
+    expected_thinking: "slow"
+    key_considerations:
+      - "20% active users are more valuable for learning"
+      - "Simplification risks losing power users"
+      - "Two versions doubles maintenance burden"
+      - "Power users can be evangelists"
+
+  - id: "S06"
+    category: "product"
+    context: |
+      You have a working prototype. Early feedback is positive.
+      You could launch as MVP now (basic features) or spend 1 more
+      month adding key features that users requested.
+    decision: "Launch now or wait 1 month?"
+    options:
+      - "A) Launch now as MVP"
+      - "B) Wait 1 month for more features"
+    constraints:
+      - "Competitor launching in 6 weeks"
+      - "Current prototype handles core use case"
+      - "Users requested feature X (2 weeks to build)"
+    expected_thinking: "fast"
+    key_considerations:
+      - "Competitor launching soon (time pressure)"
+      - "Core use case is handled"
+      - "Can iterate after launch"
+      - "Early feedback is valuable"
+
+  # ─────────────────────────────────────────────────────────────
+  # RESOURCE DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S07"
+    category: "resource"
+    context: |
+      You have $10K to spend. Options: (1) Paid advertising to
+      acquire users, (2) Hire a part-time developer, (3) Attend
+      a industry conference for networking, (4) Save for runway.
+    decision: "How to allocate $10K?"
+    options:
+      - "A) Paid advertising"
+      - "B) Hire part-time developer"
+      - "C) Conference networking"
+      - "D) Save for runway"
+    constraints:
+      - "6 months runway total"
+      - "Current user acquisition is slow"
+      - "Need more development capacity"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Runway is tight (6 months)"
+      - "Paid ads have uncertain ROI at this stage"
+      - "Developer increases capacity"
+      - "Conference provides network but uncertain return"
+      - "Saving extends runway (safety)"
+
+  - id: "S08"
+    category: "resource"
+    context: |
+      You're spending 70% of time on consulting, 30% on product.
+      Consulting revenue is stable. Product is progressing slowly.
+      You could shift to 50/50 or even 30/70 (consulting/product).
+    decision: "How to split your time?"
+    options:
+      - "A) Keep 70/30 (consulting/product)"
+      - "B) Shift to 50/50"
+      - "C) Shift to 30/70"
+    constraints:
+      - "Consulting covers living expenses"
+      - "Product needs more development time"
+      - "Can't afford to lose consulting income"
+    expected_thinking: "fast"
+    key_considerations:
+      - "Consulting is income source"
+      - "Product needs more time to progress"
+      - "50/50 is a safe middle ground"
+      - "30/70 is risky if consulting income drops"
+
+  - id: "S09"
+    category: "resource"
+    context: |
+      A potential co-founder approaches you. They have strong
+      business development skills (your weakness) but no technical
+      background. They want 40% equity.
+    decision: "Should you accept this co-founder?"
+    options:
+      - "A) Accept with 40% equity"
+      - "B) Negotiate to 25% equity"
+      - "C) Decline, stay solo"
+      - "D) Propose trial period first"
+    constraints:
+      - "You're solo founder"
+      - "Weak on business development"
+      - "40% is significant equity"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Co-founder addresses key weakness"
+      - "40% is high for unproven partner"
+      - "Trial period reduces risk"
+      - "Solo founder has limitations"
+      - "Values: 'autonomy' vs 'growth'"
+
+  # ─────────────────────────────────────────────────────────────
+  # TECHNOLOGY DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S10"
+    category: "technology"
+    context: |
+      Building an AI Agent product. Need to choose LLM approach:
+      (1) Use OpenAI API (easy, expensive at scale),
+      (2) Use open-source LLM (complex, cheaper at scale),
+      (3) Hybrid (OpenAI for prototyping, migrate later).
+    decision: "Which LLM approach to use?"
+    options:
+      - "A) OpenAI API only"
+      - "B) Open-source LLM only"
+      - "C) Hybrid approach"
+    constraints:
+      - "Need to launch in 4 weeks"
+      - "Current user base: 100 users"
+      - "Cost-sensitive target market"
+    expected_thinking: "fast"
+    key_considerations:
+      - "Time constraint (4 weeks) favors OpenAI API"
+      - "Open-source requires more engineering time"
+      - "Hybrid adds migration complexity"
+      - "Cost becomes issue at scale (future problem)"
+
+  - id: "S11"
+    category: "technology"
+    context: |
+      Your AI Agent needs to process user documents. Options:
+      (1) RAG with vector database, (2) Fine-tune model on user data,
+      (3) Use prompt engineering with large context window.
+      Each has different accuracy/cost/complexity tradeoffs.
+    decision: "Which approach for document processing?"
+    options:
+      - "A) RAG with vector database"
+      - "B) Fine-tune model"
+      - "C) Large context window"
+    constraints:
+      - "Users have 100-1000 page documents"
+      - "Need high accuracy"
+      - "Limited ML engineering capacity"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Document size (100-1000 pages) rules out large context"
+      - "Fine-tuning requires ML expertise (limited capacity)"
+      - "RAG is proven approach for document Q&A"
+      - "RAG balances accuracy and complexity"
+
+  - id: "S12"
+    category: "technology"
+    context: |
+      Your product is a web app. Users are requesting a mobile app.
+      You could: (1) Build native iOS/Android, (2) Build React Native,
+      (3) Make web app responsive, (4) Use PWA.
+    decision: "How to support mobile users?"
+    options:
+      - "A) Native iOS + Android"
+      - "B) React Native"
+      - "C) Responsive web"
+      - "D) PWA"
+    constraints:
+      - "1 developer (you)"
+      - "Need mobile presence in 2 months"
+      - "Current web app is React"
+    expected_thinking: "fast"
+    key_considerations:
+      - "1 developer can't maintain native apps"
+      - "React Native reuses React skills"
+      - "PWA is fastest to implement"
+      - "Responsive web is simplest"
+
+  # ─────────────────────────────────────────────────────────────
+  # CUSTOMER DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S13"
+    category: "customer"
+    context: |
+      A large enterprise client wants to use your product. They're
+      willing to pay 10x your normal price but want custom features
+      and dedicated support. This would be 80% of your revenue.
+    decision: "Should you accept this enterprise client?"
+    options:
+      - "A) Accept fully (custom features + dedicated support)"
+      - "B) Accept with limits (some customization, standard support)"
+      - "C) Decline (stay focused on SME market)"
+    constraints:
+      - "10x normal price is significant revenue"
+      - "Custom features distract from product roadmap"
+      - "80% revenue concentration is risky"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Revenue concentration risk (80% from one client)"
+      - "Custom features distract from product"
+      - "Enterprise needs differ from SME needs"
+      - "10x revenue could extend runway significantly"
+      - "Limited acceptance balances revenue and focus"
+
+  - id: "S14"
+    category: "customer"
+    context: |
+      Users are churning after 2 months. Exit surveys show:
+      40% say "too expensive", 30% say "too complex",
+      20% say "doesn't solve my problem", 10% say "found alternative".
+    decision: "How to reduce churn?"
+    options:
+      - "A) Lower pricing"
+      - "B) Simplify product"
+      - "C) Better onboarding and education"
+      - "D) All of the above"
+    constraints:
+      - "Limited engineering resources"
+      - "Need to maintain revenue"
+      - "Can't solve all problems at once"
+    expected_thinking: "fast"
+    key_considerations:
+      - "40% price sensitivity is largest segment"
+      - "30% complexity is second largest"
+      - "Lowering price affects revenue"
+      - "Simplification addresses both price and complexity perception"
+
+  - id: "S15"
+    category: "customer"
+    context: |
+      You have 3 customer segments showing interest:
+      A) Marketing agencies (need content generation)
+      B) Legal firms (need document analysis)
+      C) E-commerce (need customer service automation)
+      Each requires different product focus.
+    decision: "Which segment to focus on?"
+    options:
+      - "A) Marketing agencies"
+      - "B) Legal firms"
+      - "C) E-commerce"
+      - "D) Serve all three"
+    constraints:
+      - "Can only optimize for one segment at a time"
+      - "Each segment has different needs"
+      - "Need to choose within 2 weeks"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Marketing: content generation is competitive"
+      - "Legal: high willingness to pay, compliance requirements"
+      - "E-commerce: customer service automation is growing"
+      - "Serving all dilutes focus"
+
+  # ─────────────────────────────────────────────────────────────
+  # GROWTH DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S16"
+    category: "growth"
+    context: |
+      Your product is growing 20% month-over-month. You're at
+      capacity handling current customers. You could: (1) Hire
+      to scale, (2) Raise prices to slow growth, (3) Improve
+      automation to handle more with same team.
+    decision: "How to handle rapid growth?"
+    options:
+      - "A) Hire immediately"
+      - "B) Raise prices"
+      - "C) Improve automation"
+      - "D) Combination"
+    constraints:
+      - "At capacity"
+      - "20% MoM growth"
+      - "Limited budget for hiring"
+    expected_thinking: "fast"
+    key_considerations:
+      - "At capacity means can't ignore growth"
+      - "Hiring requires budget"
+      - "Automation is scalable solution"
+      - "Raising prices may slow growth but improve unit economics"
+
+  - id: "S17"
+    category: "growth"
+    context: |
+      You've achieved product-market fit in your home market.
+      International expansion opportunities exist in:
+      A) Southeast Asia (growing, price-sensitive)
+      B) Europe (mature, high willingness to pay)
+      C) Latin America (emerging, relationship-driven)
+    decision: "Which market to expand to first?"
+    options:
+      - "A) Southeast Asia"
+      - "B) Europe"
+      - "C) Latin America"
+      - "D) Stay domestic for now"
+    constraints:
+      - "Limited international experience"
+      - "Need localization"
+      - "Each market requires different approach"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Europe: high WTP but mature market"
+      - "SEA: growing but price-sensitive"
+      - "LATAM: relationship-driven requires local presence"
+      - "Domestic focus allows deeper market penetration"
+
+  - id: "S18"
+    category: "growth"
+    context: |
+      A competitor is copying your features and selling at 50%
+      of your price. They're gaining market share quickly.
+      Your differentiation is: better UX, faster support, integrations.
+    decision: "How to respond to competitor?"
+    options:
+      - "A) Match their price"
+      - "B) Double down on differentiation"
+      - "C) Accelerate feature development"
+      - "D) Focus on enterprise segment"
+    constraints:
+      - "Competitor has more funding"
+      - "Price war is unsustainable"
+      - "Your advantage is quality, not price"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Price matching is unsustainable (more funding)"
+      - "Differentiation is existing advantage"
+      - "Feature race is resource-intensive"
+      - "Enterprise segment values quality over price"
+
+  # ─────────────────────────────────────────────────────────────
+  # PERSONAL DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S19"
+    category: "personal"
+    context: |
+      You've been working 70-hour weeks for 6 months. Product is
+      growing but you're exhausted. You could: (1) Take a vacation,
+      (2) Hire help, (3) Reduce scope, (4) Push through.
+    decision: "How to address burnout?"
+    options:
+      - "A) Take 1-week vacation"
+      - "B) Hire help"
+      - "C) Reduce product scope"
+      - "D) Push through"
+    constraints:
+      - "Product growth depends on you"
+      - "Physical and mental health declining"
+      - "Budget is tight"
+    expected_thinking: "fast"
+    key_considerations:
+      - "Burnout affects long-term productivity"
+      - "Vacation provides recovery"
+      - "Hiring requires budget"
+      - "Scope reduction reduces workload"
+
+  - id: "S20"
+    category: "personal"
+    context: |
+      An investor offers $500K seed funding. Terms: 20% equity,
+      board seat, monthly reporting. You're currently bootstrapped.
+      Accepting means faster growth but less control.
+    decision: "Should you accept seed funding?"
+    options:
+      - "A) Accept funding"
+      - "B) Negotiate terms (less equity)"
+      - "C) Decline, stay bootstrapped"
+      - "D) Ask for more time to decide"
+    constraints:
+      - "Current runway: 6 months"
+      - "Growth is steady but slow"
+      - "Investor wants board seat and reporting"
+    expected_thinking: "slow"
+    key_considerations:
+      - "6 months runway is manageable"
+      - "Funding enables faster growth"
+      - "20% equity + board seat reduces control"
+      - "Monthly reporting adds overhead"
+      - "Values: 'autonomy' vs 'growth'"
+
+  - id: "S21"
+    category: "personal"
+    context: |
+      You have an opportunity to speak at a major tech conference.
+      It would take 2 weeks to prepare. Exposure could help with
+      hiring and partnerships. But it delays product development.
+    decision: "Should you speak at the conference?"
+    options:
+      - "A) Yes, full commitment"
+      - "B) Yes, but minimal preparation"
+      - "C) Decline this year"
+    constraints:
+      - "2 weeks preparation time"
+      - "Product sprint ongoing"
+      - "Conference is in 6 weeks"
+    expected_thinking: "fast"
+    key_considerations:
+      - "Exposure helps hiring and partnerships"
+      - "2 weeks delays product"
+      - "Minimal preparation may hurt reputation"
+      - "Declining preserves product momentum"
+
+  # ─────────────────────────────────────────────────────────────
+  # CRISIS DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S22"
+    category: "crisis"
+    context: |
+      Your main server crashed. Users can't access the product.
+      ETA for fix: 4 hours. Users are complaining on social media.
+      You could: (1) Focus on fix only, (2) Communicate while fixing,
+      (3) Offer compensation immediately.
+    decision: "How to handle the outage?"
+    options:
+      - "A) Focus 100% on fix"
+      - "B) Fix + communicate status updates"
+      - "C) Fix + communicate + offer compensation"
+    constraints:
+      - "4 hours to fix"
+      - "Users angry on social media"
+      - "Reputation at stake"
+    expected_thinking: "fast"
+    key_considerations:
+      - "Fix is priority #1"
+      - "Communication manages expectations"
+      - "Compensation shows good faith"
+      - "Focus on fix only may increase user frustration"
+
+  - id: "S23"
+    category: "crisis"
+    context: |
+      Your biggest customer (30% of revenue) threatens to leave.
+      They're unhappy with recent bugs. You could: (1) Offer
+      discount, (2) Dedicate engineering time to fix their issues,
+      (3) Let them go and focus on other customers.
+    decision: "How to retain this customer?"
+    options:
+      - "A) Offer 30% discount"
+      - "B) Dedicate 1 week engineering to their issues"
+      - "C) Let them go"
+      - "D) Combination: fix issues + small discount"
+    constraints:
+      - "30% of revenue at risk"
+      - "Engineering time is scarce"
+      - "Bugs affect other customers too"
+    expected_thinking: "fast"
+    key_considerations:
+      - "30% revenue is significant"
+      - "Bugs affect all customers (fix anyway)"
+      - "Discount sets precedent"
+      - "Combination balances retention and engineering"
+
+  - id: "S24"
+    category: "crisis"
+    context: |
+      A security vulnerability is discovered in your product.
+      User data may have been exposed. You need to: (1) Fix the
+      vulnerability, (2) Notify affected users, (3) Handle PR.
+    decision: "How to handle the security incident?"
+    options:
+      - "A) Fix silently, don't notify"
+      - "B) Fix + notify affected users"
+      - "C) Fix + notify + public disclosure"
+    constraints:
+      - "Legal requirements for notification"
+      - "PR risk"
+      - "User trust at stake"
+    expected_thinking: "fast"
+    key_considerations:
+      - "Legal requirement to notify"
+      - "Silent fix is unethical and risky"
+      - "Public disclosure shows transparency"
+      - "User trust is long-term asset"
+
+  # ─────────────────────────────────────────────────────────────
+  # INNOVATION DECISIONS
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "S25"
+    category: "innovation"
+    context: |
+      A new AI model just released that's 10x better for your use case.
+      Integrating it would take 2 weeks and require reworking some
+      features. Current model works "good enough".
+    decision: "Should you switch to the new model?"
+    options:
+      - "A) Switch immediately"
+      - "B) Evaluate for 1 week, then decide"
+      - "C) Wait 3 months for it to mature"
+    constraints:
+      - "2 weeks integration time"
+      - "Current model is stable"
+      - "New model is significantly better"
+    expected_thinking: "fast"
+    key_considerations:
+      - "10x improvement is significant"
+      - "2 weeks is manageable"
+      - "Evaluation reduces risk"
+      - "Waiting may lose competitive advantage"
+
+  - id: "S26"
+    category: "innovation"
+    context: |
+      You could build an AI feature that no competitor has. It would
+      take 1 month to build. Risk: users may not want it. Reward:
+      strong differentiation if they do.
+    decision: "Should you build this innovative feature?"
+    options:
+      - "A) Build it (bet on innovation)"
+      - "B) Validate with 10 users first (2 weeks)"
+      - "C) Skip, focus on proven features"
+    constraints:
+      - "1 month development time"
+      - "No competitor has this feature"
+      - "Uncertain user demand"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Innovation can differentiate"
+      - "Validation reduces risk"
+      - "1 month is significant investment"
+      - "User feedback is critical before major investment"
+
+  - id: "S27"
+    category: "innovation"
+    context: |
+      Open-source community is building a free alternative to your
+      product. It's not as good yet but improving fast. You could:
+      (1) Contribute to open-source, (2) Compete directly, (3) Build
+      on top of it, (4) Ignore it.
+    decision: "How to respond to open-source competition?"
+    options:
+      - "A) Contribute to the project"
+      - "B) Compete directly"
+      - "C) Build on top of it"
+      - "D) Ignore and focus on your product"
+    constraints:
+      - "Open-source is free"
+      - "Community is growing"
+      - "Your advantage is UX and support"
+    expected_thinking: "slow"
+    key_considerations:
+      - "Open-source is threat and opportunity"
+      - "Contributing builds reputation"
+      - "Competing on price is losing game"
+      - "Building on top leverages community work"
+      - "Ignoring may be short-sighted"

@@ -1,0 +1,226 @@
+# ============================================================
+# PCOS Identity Core Schema
+# Version: MVP
+# Description: User identity, values, preferences, decision patterns
+# Philosophy: Identity First — everything downstream depends on this
+# ============================================================
+
+schema:
+  version: "mvp"
+  type: "identity_core"
+  description: "Who you are, what you value, how you decide"
+
+# ─────────────────────────────────────────────────────────────
+# Layer 1: Core Values
+# Philosophy: No weights in MVP. Binary "core" vs "non-core".
+# Weights emerge from behavior in V2, not from self-reporting.
+# ─────────────────────────────────────────────────────────────
+core_values:
+  type: "list"
+  constraints:
+    min_items: 3
+    max_items: 10
+    no_weights_in_mvp: true
+    reason: "Humans cannot reliably distinguish 0.95 from 0.90 self-reported weights"
+
+  item_schema:
+    name:
+      type: "string"
+      required: true
+    category:
+      type: "enum"
+      values:
+        - "life_philosophy"
+        - "work_style"
+        - "relationship"
+        - "growth"
+        - "impact"
+        - "security"
+    description:
+      type: "string"
+      note: "One sentence: what this value means in practice"
+    declared_at:
+      type: "datetime"
+
+  # Initialization method
+  initialization:
+    method: "structured_interview"
+    rounds: 5-7
+    interview_style: "challenging"
+    example_questions:
+      - "What would you never compromise on, even for a lot of money?"
+      - "When did you last act against your gut feeling? What happened?"
+      - "What do you want to be remembered for?"
+
+# ─────────────────────────────────────────────────────────────
+# Layer 2: Current Focus
+# Short-lived, explicitly declared, regularly updated
+# ─────────────────────────────────────────────────────────────
+current_focus:
+  type: "object"
+  fields:
+    primary:
+      type: "string"
+      required: true
+      description: "Primary domain of active investment"
+    secondary:
+      type: "string"
+      description: "Secondary domain"
+    time_horizon:
+      type: "enum"
+      values:
+        - "short"     # days to weeks
+        - "medium"    # weeks to months
+        - "long"      # months to years
+    updated_at:
+      type: "datetime"
+
+  update_trigger:
+    - "user explicit declaration"
+    - "3+ consecutive decisions in new domain"
+
+# ─────────────────────────────────────────────────────────────
+# Layer 3: Known Preferences
+# Key design: confidence is SYSTEM-INFERRED, not user-declared
+# ─────────────────────────────────────────────────────────────
+known_preferences:
+  type: "dict"
+  key: "preference_name"
+  value_schema:
+    direction:
+      type: "string"
+      description: "Natural language direction (e.g., 'fast', 'moderate', 'high')"
+    confidence:
+      type: "float"
+      range: [0.0, 1.0]
+      default: 0.5
+      note: "System-inferred from behavior consistency, NOT user-declared"
+    source:
+      type: "enum"
+      values:
+        - "declared"    # user said it
+        - "observed"    # system saw behavior
+        - "inferred"    # system deduced from pattern
+    last_validated:
+      type: "datetime"
+
+  # Default preferences to seed during initialization
+  seed_preferences:
+    - name: "decision_speed"
+      question: "When facing a decision, do you prefer to decide quickly or analyze deeply?"
+      options: ["fast", "moderate", "slow"]
+    - name: "risk_tolerance"
+      question: "How do you feel about uncertain outcomes?"
+      options: ["risk_seeking", "moderate", "risk_averse"]
+    - name: "information_density"
+      question: "Do you prefer brief summaries or detailed analysis?"
+      options: ["low", "moderate", "high"]
+    - name: "autonomy_vs_guidance"
+      question: "Do you prefer recommendations or just information?"
+      options: ["strong_recommendations", "options_with_analysis", "raw_data_only"]
+
+# ─────────────────────────────────────────────────────────────
+# Layer 4: Decision Log
+# The most important data structure in the entire system
+# Raw material for: World Model, Strategy, Learning, Evolution
+# ─────────────────────────────────────────────────────────────
+decision_log:
+  type: "list"
+  item_schema:
+    id:
+      type: "string"
+      format: "uuid"
+    timestamp:
+      type: "datetime"
+    context:
+      type: "string"
+      description: "What choice was faced"
+      required: true
+    options:
+      type: "list[string]"
+      min_items: 2
+      description: "All options considered (including rejected ones)"
+    chosen:
+      type: "string"
+      required: true
+    reasoning:
+      type: "string"
+      note: "User self-reported. Can be incomplete. System will infer gaps later."
+    outcome:
+      type: "string"
+      nullable: true
+      note: "Back-filled after execution"
+    outcome_rating:
+      type: "integer"
+      range: [1, 5]
+      nullable: true
+      scale:
+        1: "Worst possible outcome"
+        2: "Below expectations"
+        3: "Met expectations"
+        4: "Exceeded expectations"
+        5: "Best possible outcome"
+    values_alignment:
+      type: "list[string]"
+      description: "Which core values this decision aligned with (post-hoc)"
+      nullable: true
+    surprise_factor:
+      type: "enum"
+      values:
+        - "unexpected_good"
+        - "expected"
+        - "unexpected_bad"
+        - "major_surprise"
+      nullable: true
+
+  capture_method:
+    - "user explicit: 'I decided X because Y'"
+    - "system detected: from conversation context"
+    - "retrospective: user reviews past decision"
+
+# ─────────────────────────────────────────────────────────────
+# Evolution Rules (not active in MVP, defined for forward compat)
+# ─────────────────────────────────────────────────────────────
+evolution:
+  identity_update_triggers:
+    - condition: "surprise_factor == 'major_surprise'"
+      action: "flag for identity review"
+    - condition: "3+ new DecisionPatterns detected in V2"
+      action: "suggest pattern integration"
+    - condition: "user explicit: 'my thinking has changed'"
+      action: "begin identity update dialog"
+    - condition: "external feedback contradicts self-perception"
+      action: "present contradiction, ask for resolution"
+
+  update_policy:
+    requires_user_confirmation: true
+    max_updates_per_month: 2
+    reason: "Identity changes should be deliberate, not drift"
+
+# ─────────────────────────────────────────────────────────────
+# Integration Points
+# ─────────────────────────────────────────────────────────────
+integration:
+  provides_to:
+    world_model:
+      - "core_values for belief formation"
+      - "known_preferences for bias detection"
+    strategy_engine:
+      - "core_values for value alignment scoring"
+      - "current_focus for priority determination"
+      - "known_preferences for strategy style"
+    decision_engine:
+      - "decision_log for pattern matching"
+      - "known_preferences for fast/slow routing"
+    learning:
+      - "decision_log for pattern extraction"
+      - "outcome ratings for feedback loops"
+
+  receives_from:
+    decision_engine:
+      - "new DecisionRecord entries"
+    learning:
+      - "discovered DecisionPatterns (V2)"
+      - "value_weight updates (V2)"
+    reflection:
+      - "surprise_factor signals"

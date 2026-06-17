@@ -1,0 +1,121 @@
+# Identity Candidates
+# 从真实决策中发现的 Identity 候选
+# 不要自动写入 identity.yaml
+# 等 10+ 证据后再更新
+
+---
+
+candidates:
+
+  - id: "candidate_001"
+    name: "career_security"
+    description: "职业安全感 - 重视职业稳定性和市场竞争力"
+    evidence:
+      - source: "decision_003"
+        observation: "学AI同时保留Java"
+        date: "2026-06-17"
+      - source: "decision_003"
+        observation: "重视就业竞争力"
+        date: "2026-06-17"
+      - source: "decision_003"
+        observation: "重视技术广度"
+        date: "2026-06-17"
+    confidence: 0.85
+    status: "pending_review"
+    suggested_weight: 0.85
+
+  - id: "candidate_002"
+    name: "market_competitiveness"
+    description: "市场竞争力 - 重视在就业市场的竞争力"
+    evidence:
+      - source: "decision_003"
+        observation: "多学习一些才能更有竞争力"
+        date: "2026-06-17"
+      - source: "decision_003"
+        observation: "重视技术广度"
+        date: "2026-06-17"
+    confidence: 0.80
+    status: "pending_review"
+    suggested_weight: 0.80
+
+  - id: "candidate_003"
+    name: "economic_resilience"
+    description: "经济韧性 - 重视经济安全和抗风险能力"
+    evidence:
+      - source: "decision_002"
+        observation: "拒绝外包，专注自有项目"
+        date: "2026-06-12"
+        note: "长期目标优先于短期收入"
+      - source: "decision_003"
+        observation: "保留Java作为备份"
+        date: "2026-06-17"
+    confidence: 0.75
+    status: "pending_review"
+    suggested_weight: 0.80
+
+  - id: "candidate_004"
+    name: "optionality"
+    description: "可选性偏好 - 倾向于保留更多选择空间"
+    evidence:
+      - source: "decision_003"
+        observation: "AI为主+Java补充 > 纯AI"
+        date: "2026-06-17"
+        note: "保留选择空间比专注更有价值"
+    confidence: 0.70
+    status: "pending_review"
+    suggested_weight: 0.75
+    decision_pattern: "prefer_optionality"
+
+  - id: "candidate_005"
+    name: "long_term_compounding"
+    description: "长期复利 - 倾向于长期收益而非短期回报"
+    evidence:
+      - source: "decision_002"
+        observation: "拒绝外包，专注自有项目"
+        date: "2026-06-12"
+        note: "外包会分散精力，不符合长期目标"
+    confidence: 0.70
+    status: "pending_review"
+    suggested_weight: 0.75
+    decision_pattern: "long_term_compounding"
+
+  - id: "candidate_006"
+    name: "data_first"
+    description: "数据优先 - 优先获取真实数据，用数据验证假设"
+    evidence:
+      - source: "decision_003"
+        observation: "选择数据整合而非自动化报告"
+        date: "2026-06-17"
+        note: "数据整合能让我拿到真实用户数据"
+    confidence: 0.85
+    status: "pending_review"
+    suggested_weight: 0.85
+    decision_pattern: "data_first"
+
+  - id: "candidate_007"
+    name: "validation_through_data"
+    description: "数据验证 - 用真实数据验证市场，而非假设"
+    evidence:
+      - source: "decision_003"
+        observation: "数据整合是验证市场的关键"
+        date: "2026-06-17"
+        note: "这是验证市场的关键"
+    confidence: 0.80
+    status: "pending_review"
+    suggested_weight: 0.80
+    decision_pattern: "validation_through_data"
+
+---
+
+# 统计
+summary:
+  total_candidates: 7
+  pending_review: 7
+  approved: 0
+  rejected: 0
+
+# 证据阈值
+thresholds:
+  min_evidence_for_approval: 3
+  min_confidence_for_approval: 0.70
+  min_decisions_observed: 5

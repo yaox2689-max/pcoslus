@@ -1,0 +1,202 @@
+# PCOS Identity Data (User Profile)
+# Updated: 2026-06-17
+# Based on ACTUAL decision patterns, not self-reporting
+
+# ─────────────────────────────────────────────────────────────
+# Core Values with INFERRED weights
+# Based on actual decisions:
+# - "多学习一些才能更有竞争力" → learning + market_competitiveness high
+# - "外包会分散精力" → autonomy high
+# - "AI为主+Java补充" → prefer_optionality
+# ─────────────────────────────────────────────────────────────
+
+core_values:
+  - name: "自主性"
+    category: "life_philosophy"
+    description: "Independence and control over decisions"
+    weight: 0.90
+    source: "observed_from_decisions"
+    declared_at: "2026-06-17"
+
+  - name: "持续学习"
+    category: "growth"
+    description: "Continuous learning and improvement"
+    weight: 0.90
+    source: "observed_from_decisions"
+    declared_at: "2026-06-17"
+
+  - name: "职业安全"
+    category: "security"
+    description: "Career stability and marketability"
+    weight: 0.85
+    source: "inferred_from_decisions"
+    evidence: "多学习一些才能更有竞争力"
+    declared_at: "2026-06-17"
+
+  - name: "市场竞争力"
+    category: "security"
+    description: "Ability to compete in job market"
+    weight: 0.85
+    source: "inferred_from_decisions"
+    evidence: "多学习一些才能更有竞争力"
+    declared_at: "2026-06-17"
+
+  - name: "创造力"
+    category: "work_style"
+    description: "Creating new things and solving problems creatively"
+    weight: 0.70
+    source: "declared"
+    declared_at: "2026-06-17"
+
+  - name: "影响力"
+    category: "impact"
+    description: "Making a meaningful impact on the world"
+    weight: 0.60
+    source: "declared"
+    declared_at: "2026-06-17"
+
+  - name: "经济韧性"
+    category: "security"
+    description: "Ability to withstand economic downturns"
+    weight: 0.80
+    source: "inferred_from_decisions"
+    evidence: "外包会分散精力，不符合长期目标"
+    declared_at: "2026-06-17"
+
+# ─────────────────────────────────────────────────────────────
+# Decision Patterns (observed, not declared)
+# ─────────────────────────────────────────────────────────────
+
+decision_patterns:
+  - name: "prefer_optionality"
+    description: "倾向于保留更多选择空间，而非押注单一路径"
+    evidence:
+      - "AI为主+Java补充 > 纯AI"
+      - "拒绝外包但保留技术广度"
+    confidence: 0.85
+    weight: "high"
+
+  - name: "avoid_binary_choices"
+    description: "倾向于寻找组合策略，而非二选一"
+    evidence:
+      - "AI为主+Java补充，而非纯AI或纯Java"
+      - "学习AI再补偿Java"
+    confidence: 0.80
+    weight: "high"
+
+  - name: "hedge_uncertainty"
+    description: "面对不确定性时，倾向于对冲风险"
+    evidence:
+      - "保留Java作为备份"
+      - "多学习一些才能更有竞争力"
+    confidence: 0.75
+    weight: "medium"
+
+  - name: "long_term_compounding"
+    description: "倾向于长期复利收益，而非短期回报"
+    evidence:
+      - "拒绝外包，专注自有项目"
+      - "外包会分散精力，不符合长期目标"
+    confidence: 0.75
+    weight: "medium"
+
+  - name: "risk_managed_growth"
+    description: "愿意承担风险，但需要有安全网"
+    evidence:
+      - "学习AI但保留Java作为备份"
+      - "不是全押，而是为主+为辅"
+    confidence: 0.70
+    weight: "medium"
+
+# ─────────────────────────────────────────────────────────────
+# Current Focus
+# ─────────────────────────────────────────────────────────────
+
+current_focus:
+  primary: "商业与创业"
+  secondary: "技术与工程"
+  time_horizon: "medium"
+  updated_at: "2026-06-17"
+
+# ─────────────────────────────────────────────────────────────
+# Known Preferences
+# ─────────────────────────────────────────────────────────────
+
+known_preferences:
+  decision_speed:
+    direction: "fast"
+    confidence: 0.7
+    source: "declared"
+    last_validated: "2026-06-17"
+
+  risk_tolerance:
+    direction: "moderate"
+    confidence: 0.6
+    source: "inferred"
+    evidence: "愿意学AI但保留Java，不是全押"
+    last_validated: "2026-06-17"
+
+  information_density:
+    direction: "high"
+    confidence: 0.8
+    source: "observed"
+    last_validated: "2026-06-17"
+
+  autonomy_vs_guidance:
+    direction: "options_with_analysis"
+    confidence: 0.6
+    source: "declared"
+    last_validated: "2026-06-17"
+
+  long_term_vs_short_term:
+    direction: "long_term"
+    confidence: 0.75
+    source: "inferred"
+    evidence: "拒绝外包，专注自有项目"
+    last_validated: "2026-06-17"
+
+  optionality_preference:
+    direction: "high"
+    confidence: 0.80
+    source: "inferred"
+    evidence: "AI为主+Java补充 > 纯AI"
+    last_validated: "2026-06-17"
+
+# ─────────────────────────────────────────────────────────────
+# Decision Log
+# ─────────────────────────────────────────────────────────────
+
+decision_log:
+  - id: "d-001"
+    timestamp: "2026-06-10"
+    context: "选择技术栈"
+    options: ["Python + FastAPI", "Node.js + Express", "Go + Gin"]
+    chosen: "Python + FastAPI"
+    reasoning: "最熟悉，生态最好"
+    outcome: "good"
+    outcome_rating: 4
+    values_alignment: ["持续学习", "市场竞争力"]
+    surprise_factor: "expected"
+
+  - id: "d-002"
+    timestamp: "2026-06-12"
+    context: "是否接外包项目赚快钱"
+    options: ["接外包", "拒绝，专注自有项目"]
+    chosen: "拒绝，专注自有项目"
+    reasoning: "外包会分散精力，不符合长期目标"
+    outcome: "mixed"
+    outcome_rating: 3
+    values_alignment: ["自主性", "持续学习", "经济韧性"]
+    surprise_factor: "expected"
+
+  - id: "d-003"
+    timestamp: "2026-06-17"
+    context: "学习AI还是Java"
+    options: ["100% AI", "70% AI + 30% Java", "50% AI + 50% Java"]
+    chosen: "学习AI再补偿Java"
+    reasoning: "多学习一些才能更有竞争力"
+    outcome: null
+    outcome_rating: null
+    values_alignment: ["持续学习", "市场竞争力", "职业安全", "经济韧性"]
+    surprise_factor: null
+    decision_pattern: "prefer_optionality"

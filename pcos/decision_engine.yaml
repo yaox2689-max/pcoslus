@@ -1,0 +1,483 @@
+# ============================================================
+# PCOS Decision Engine Schema
+# Version: MVP
+# Description: BDI-based decision engine with Fast/Slow thinking
+# Core principle: Beliefs (World Model) + Desires (Identity)
+#                → Intentions (Strategy) → Decisions
+# ============================================================
+
+schema:
+  version: "mvp"
+  type: "decision_engine"
+  description: "How the system makes decisions, with cognitive style switching"
+
+# ─────────────────────────────────────────────────────────────
+# BDI Integration
+# Belief-Desire-Intention: the cognitive architecture
+# ─────────────────────────────────────────────────────────────
+bdi:
+  beliefs:
+    source: "world_model"
+    description: "What is true about the world (with confidence)"
+    update_trigger:
+      - "new information from user"
+      - "execution outcome contradicts prediction"
+      - "belief confidence decayed below threshold"
+      - "contradiction detected"
+    refresh_on: "every decision cycle"
+
+  desires:
+    source: "identity_core"
+    description: "What the user wants (values, preferences, focus)"
+    update_trigger:
+      - "identity evolution event"
+      - "user explicit value statement"
+      - "preference confidence updated"
+    refresh_on: "every decision cycle"
+
+  intentions:
+    source: "strategy_engine"
+    description: "What the user has committed to doing"
+    update_trigger:
+      - "strategy formation"
+      - "strategy revision"
+      - "stop_loss triggered"
+    refresh_on: "when strategy changes"
+
+  # The BDI cycle
+  cycle:
+    steps:
+      - id: "perceive"
+        description: "Update beliefs from World Model"
+      - id: "desire"
+        description: "Load current desires from Identity Core"
+      - id: "deliberate"
+        description: "Identify which desires are relevant to current situation"
+      - id: "intend"
+        description: "Form intentions based on beliefs + desires + strategy"
+      - id: "plan"
+        description: "Create plan to achieve intentions"
+      - id: "act"
+        description: "Execute plan"
+
+# ─────────────────────────────────────────────────────────────
+# Thinking Modes
+# Fast: intuitive, pattern-matching, quick
+# Slow: analytical, structured, deep
+# ─────────────────────────────────────────────────────────────
+thinking_modes:
+
+  fast:
+    name: "Fast Thinking"
+    description: "Intuitive, pattern-matching, quick. For familiar situations."
+    cognitive_style: "System 1 (Kahneman)"
+    max_options: 2
+    confidence_threshold: 0.6
+    requires_reasoning_chain: false
+    allows_escalation: true
+
+    triggers:
+      conditions:
+        - field: "complexity"
+          operator: "=="
+          value: "low"
+          weight: 0.30
+        - field: "risk_level"
+          operator: "=="
+          value: "low"
+          weight: 0.25
+        - field: "model_coverage"
+          operator: ">"
+          value: 0.7
+          weight: 0.20
+        - field: "has_matching_pattern"
+          operator: "=="
+          value: true
+          weight: 0.15
+        - field: "reversibility"
+          operator: "=="
+          value: "easy"
+          weight: 0.10
+
+    process:
+      steps:
+        - id: "pattern_match"
+          description: "Search Decision Log for similar past decisions"
+          output: "matched_patterns"
+        - id: "analogy"
+          description: "Find analogous situations from World Model"
+          output: "analogies"
+        - id: "generate"
+          description: "Generate 1-2 options based on patterns and analogies"
+          output: "options"
+        - id: "quick_check"
+          description: "Surface-level risk check"
+          output: "risk_flag"
+        - id: "recommend"
+          description: "Recommend best option"
+          output: "recommendation"
+
+  slow:
+    name: "Slow Thinking"
+    description: "Analytical, structured, deep. For complex or novel situations."
+    cognitive_style: "System 2 (Kahneman)"
+    min_options: 3
+    requires_reasoning_chain: true
+    requires_scenario_analysis: true
+    requires_assumption_check: true
+
+    triggers:
+      conditions:
+        - field: "complexity"
+          operator: "in"
+          value: ["high", "novel"]
+          weight: 0.30
+        - field: "risk_level"
+          operator: "=="
+          value: "high"
+          weight: 0.25
+        - field: "model_coverage"
+          operator: "<"
+          value: 0.5
+          weight: 0.20
+        - field: "has_matching_pattern"
+          operator: "=="
+          value: false
+          weight: 0.15
+        - field: "has_contradictions"
+          operator: "=="
+          value: true
+          weight: 0.10
+
+    process:
+      steps:
+        - id: "frame"
+          description: "Frame the decision clearly"
+          output: "decision_frame"
+        - id: "generate"
+          description: "Generate 3+ diverse options"
+          output: "options"
+        - id: "evaluate"
+          description: "Evaluate each option against criteria"
+          output: "evaluated_options"
+        - id: "scenario"
+          description: "Best/worst/likely scenario for top options"
+          output: "scenarios"
+        - id: "assumptions"
+          description: "Identify key assumptions for each option"
+          output: "assumptions"
+        - id: "blind_spots"
+          description: "Check for blind spots and contradictions"
+          output: "blind_spot_report"
+        - id: "recommend"
+          description: "Recommend with full reasoning chain"
+          output: "recommendation"
+
+# ─────────────────────────────────────────────────────────────
+# Mode Switching Rules
+# When to switch between Fast and Slow
+# ─────────────────────────────────────────────────────────────
+mode_switching:
+
+  # Weighted scoring formula
+  slow_score_formula:
+    description: "Calculate slow thinking score from assessment inputs"
+    formula: |
+      slow_score = complexity_weight * complexity_score
+                 + risk_weight * risk_score
+                 + coverage_weight * (1 - model_coverage)
+                 + pattern_weight * (1 - has_pattern)
+                 + reversibility_weight * (1 - reversibility_score)
+    weights:
+      complexity: 0.30
+      risk: 0.25
+      coverage: 0.20
+      pattern: 0.15
+      reversibility: 0.10
+
+    thresholds:
+      fast: "< 0.3"
+      fast_with_monitor: "0.3 - 0.6"
+      slow: "> 0.6"
+
+  # Escalation from Fast to Slow
+  escalation:
+    automatic_triggers:
+      - condition: "fast_confidence < 0.4"
+        reason: "Fast thinking not confident enough"
+      - condition: "new_contradiction_during_fast"
+        reason: "Contradiction discovered during fast path"
+      - condition: "user_requests_deeper"
+        reason: "User explicitly asks for deeper analysis"
+      - condition: "option_risk_flag"
+        reason: "Quick risk check flagged concern"
+
+    escalation_process:
+      steps:
+        - "Save fast thinking output as hypothesis"
+        - "Enter slow thinking with hypothesis as starting point"
+        - "Slow thinking validates or rejects hypothesis"
+        - "If validated: use fast recommendation with slow justification"
+        - "If rejected: use slow recommendation"
+
+  # De-escalation from Slow to Fast (rare but possible)
+  de_escalation:
+    triggers:
+      - condition: "slow_analysis_reveals_simple_solution"
+        reason: "Complexity was overestimated"
+      - condition: "user_time_pressure"
+        reason: "User needs answer now"
+
+# ─────────────────────────────────────────────────────────────
+# Option Evaluation Framework
+# How to score and compare options
+# ─────────────────────────────────────────────────────────────
+option_evaluation:
+
+  criteria:
+    - name: "value_alignment"
+      description: "How well does this align with Identity Core values?"
+      weight: 0.30
+      source: "identity_core"
+      measurement: "count of aligned core values / total core values"
+
+    - name: "belief_support"
+      description: "How well does World Model support this option?"
+      weight: 0.25
+      source: "world_model"
+      measurement: "average confidence of supporting beliefs"
+
+    - name: "resource_feasibility"
+      description: "Can we actually do this with available resources?"
+      weight: 0.20
+      source: "world_model.resources + strategy_engine.constraints"
+      measurement: "binary feasibility + resource strain score"
+
+    - name: "risk_acceptability"
+      description: "Are the risks within tolerance?"
+      weight: 0.15
+      source: "world_model.risks + identity_core.risk_tolerance"
+      measurement: "risk_score vs risk_tolerance threshold"
+
+    - name: "learning_potential"
+      description: "How much will we learn from this?"
+      weight: 0.10
+      source: "world_model.blind_spots"
+      measurement: "count of addressed blind spots and open questions"
+
+  scoring:
+    method: "weighted_sum"
+    range: [0.0, 1.0]
+    min_for_recommendation: 0.6
+    tie_breaker: "value_alignment"
+    explanation_required: true
+
+  # Option generation rules
+  option_generation:
+    min_options_fast: 1
+    min_options_slow: 3
+    diversity_requirement: "options must differ on at least 2 criteria"
+    must_include: "at least one option from pattern match + one novel option"
+
+# ─────────────────────────────────────────────────────────────
+# Reject & Clarification
+# When the system cannot make a decision
+# ─────────────────────────────────────────────────────────────
+reject:
+  conditions:
+    - id: "low_completeness"
+      condition: "context_completeness < 0.3"
+      reason: "Not enough information to decide"
+    - id: "high_ambiguity"
+      condition: "intent_ambiguity > 0.7"
+      reason: "Goal is not clear enough"
+    - id: "value_conflict"
+      condition: "unresolvable value conflict"
+      reason: "Core values contradict each other on this decision"
+    - id: "model_contradiction"
+      condition: "critical contradiction in World Model"
+      reason: "World Model has conflicting beliefs about this situation"
+
+  recovery:
+    method: "clarification_dialog"
+    max_rounds: 3
+    question_types:
+      - type: "scope"
+        description: "Narrow down the scope of the decision"
+        example: "Are you asking about market entry or product development?"
+      - type: "constraint"
+        description: "Clarify constraints"
+        example: "What's your budget/time limit?"
+      - type: "priority"
+        description: "Clarify priorities"
+        example: "Is speed or quality more important here?"
+      - type: "assumption"
+        description: "Challenge assumptions"
+        example: "You mentioned X, but is that actually true?"
+
+    fallback_after_max:
+      action: "suggest_decomposition"
+      description: "Break the decision into smaller, clearer sub-decisions"
+
+# ─────────────────────────────────────────────────────────────
+# Parallel Goals
+# Handling multiple concurrent goals
+# ─────────────────────────────────────────────────────────────
+parallel_goals:
+  max_concurrent: 3
+  scheduling: "priority_based"
+  execution_mutex: true
+  description: "Only one goal can be in EXECUTE state at a time"
+
+  priority_rules:
+    order:
+      - "user_declared_priority"
+      - "urgency"
+      - "stop_loss_proximity"
+      - "resource_availability"
+      - "value_alignment"
+
+  conflict_resolution:
+    resource_conflict:
+      method: "user_confirmation"
+      description: "When two goals compete for same resource, ask user"
+    priority_conflict:
+      method: "automatic"
+      description: "Use priority_rules order to resolve"
+
+  goal_states:
+    queued: "Waiting to start"
+    active: "Currently in state machine"
+    paused: "Temporarily suspended"
+    completed: "Done"
+    abandoned: "Given up"
+
+# ─────────────────────────────────────────────────────────────
+# Error Recovery
+# What happens when things go wrong during execution
+# ─────────────────────────────────────────────────────────────
+error_recovery:
+
+  failure_severity:
+    minor:
+      description: "Task failed but can retry or skip"
+      action: "retry_or_skip"
+      max_retries: 2
+      fallback: "skip_task_and_continue"
+      return_state: "EXECUTE"
+
+    major:
+      description: "Task failed and affects plan"
+      action: "return_to_planning"
+      requires_analysis: true
+      analysis_questions:
+        - "Why did this task fail?"
+        - "Does this invalidate the plan?"
+        - "Can the plan be adjusted?"
+      return_state: "PLANNING"
+
+    critical:
+      description: "Core assumption invalidated"
+      action: "return_to_strategy"
+      trigger: "assumption_invalidated"
+      requires_analysis: true
+      analysis_questions:
+        - "Which assumption was invalidated?"
+        - "How does this affect the strategy?"
+        - "Should we pivot or persevere?"
+      return_state: "STRATEGY"
+
+    catastrophic:
+      description: "Goal itself is invalid"
+      action: "return_to_assessment"
+      trigger: "goal_itself_invalid"
+      requires_analysis: true
+      analysis_questions:
+        - "Why is this goal no longer valid?"
+        - "What changed?"
+        - "Should we abandon or reformulate?"
+      return_state: "ASSESSMENT"
+
+  # How to determine severity
+  severity_classification:
+    rules:
+      - condition: "task can be retried with different approach"
+        severity: "minor"
+      - condition: "task failure affects other tasks in plan"
+        severity: "major"
+      - condition: "task failure invalidates key assumption"
+        severity: "critical"
+      - condition: "task failure shows goal is impossible/undesirable"
+        severity: "catastrophic"
+
+    requires_user_confirmation:
+      - "critical"
+      - "catastrophic"
+
+# ─────────────────────────────────────────────────────────────
+# Background Tasks (runs during IDLE state)
+# ─────────────────────────────────────────────────────────────
+background_tasks:
+
+  belief_decay_check:
+    schedule: "daily"
+    action: |
+      Scan all beliefs in World Model.
+      Apply time decay formula.
+      Mark beliefs below 0.3 as "questioned".
+      If belief is critical to active strategy: alert user.
+
+  trend_monitor:
+    schedule: "weekly"
+    action: |
+      Check external signals relevant to current Focus.
+      Compare with World Model beliefs.
+      If significant divergence: surface to user.
+    requires: "external data integration (V2)"
+
+  opportunity_scan:
+    schedule: "daily"
+    action: |
+      Cross-reference: Technology trajectories × Market gaps × User capabilities
+      If potential opportunity found with confidence > 0.5: surface to user.
+      Only scan within current Focus domains.
+
+  milestone_reminder:
+    schedule: "continuous"
+    action: |
+      Check upcoming milestones for active strategies.
+      If milestone approaching (within 20% of timeframe): remind user.
+      If milestone passed: check if achieved, update status.
+
+# ─────────────────────────────────────────────────────────────
+# Integration Points
+# ─────────────────────────────────────────────────────────────
+integration:
+  provides_to:
+    strategy_engine:
+      - "evaluated options for strategy selection"
+      - "risk assessments for strategy validation"
+    planning:
+      - "confirmed decisions for plan creation"
+      - "resource constraints for task sizing"
+    execution:
+      - "task decisions and fallback rules"
+      - "error recovery guidance"
+    identity_core:
+      - "new DecisionRecord entries"
+      - "decision patterns for evolution (V2)"
+    world_model:
+      - "outcomes that validate/invalidate beliefs"
+      - "new beliefs discovered during reasoning"
+
+  receives_from:
+    identity_core:
+      - "values, preferences, decision patterns"
+    world_model:
+      - "beliefs, confidence, contradictions"
+    strategy_engine:
+      - "strategic context, resource constraints, success criteria"
+    execution:
+      - "task outcomes, error signals"
+    user:
+      - "preferences, confirmations, overrides"

@@ -1,0 +1,416 @@
+# ============================================================
+# PCOS World Model Schema
+# Version: MVP
+# Description: Belief system about how the world works
+# Core principle: Everything is a Belief, not a Fact
+# ============================================================
+
+schema:
+  version: "mvp"
+  type: "world_model"
+  description: "What is true about the world, with uncertainty"
+  domain_focus:
+    - "business"
+    - "startup"
+    - "technology"
+
+# ─────────────────────────────────────────────────────────────
+# Belief Wrapper
+# The atomic unit of the World Model. Everything is wrapped in Belief.
+# This is not philosophical — it's engineering necessity:
+# we are often wrong, the world changes, our understanding is incomplete.
+# ─────────────────────────────────────────────────────────────
+belief:
+  type: "generic_wrapper"
+  fields:
+    id:
+      type: "string"
+      format: "uuid"
+    content:
+      type: "T"
+      description: "The actual belief content (Entity or Relation)"
+    confidence:
+      type: "float"
+      range: [0.0, 1.0]
+      never_reaches: [0.0, 1.0]
+      reason: "Absolute certainty is always wrong"
+    evidence:
+      type: "list[evidence]"
+      min_items: 0
+    assumptions:
+      type: "list[string]"
+      description: "What must be true for this belief to hold"
+    created_at:
+      type: "datetime"
+    last_validated:
+      type: "datetime"
+    source:
+      type: "enum"
+      values:
+        - "user_declared"
+        - "system_inferred"
+        - "external"
+    status:
+      type: "enum"
+      values:
+        - "active"
+        - "questioned"     # confidence dropped below threshold
+        - "contradicted"   # conflicts with another belief
+        - "deprecated"     # superseded by newer belief"
+
+evidence:
+  type: "object"
+  fields:
+    id:
+      type: "string"
+      format: "uuid"
+    content:
+      type: "string"
+      description: "What the evidence says"
+    strength:
+      type: "enum"
+      values:
+        - "strong"      # direct observation, hard data
+        - "moderate"    # indirect evidence, expert opinion
+        - "weak"        # inference, analogy, assumption
+    source:
+      type: "string"
+      description: "Where this evidence came from"
+    timestamp:
+      type: "datetime"
+    supports:
+      type: "enum"
+      values: ["supports", "contradicts", "neutral"]
+
+# ─────────────────────────────────────────────────────────────
+# Entity Types
+# Focused on business + startup + technology domain
+# ─────────────────────────────────────────────────────────────
+entities:
+
+  market:
+    description: "A market or segment"
+    fields:
+      name:
+        type: "string"
+        required: true
+      definition:
+        type: "string"
+        required: true
+        description: "Precise boundary definition"
+        example: "Chinese SME market for AI-powered customer service tools"
+      size_estimate:
+        type: "string"
+        note: "Natural language in MVP. 'About 5B RMB' not '5,234,567,890'"
+        reason: "False precision is worse than honest approximation"
+      growth_description:
+        type: "string"
+        example: "Growing 15-20% YoY, accelerating due to digital transformation"
+      maturity:
+        type: "enum"
+        values:
+          - "emerging"     # early stage, high uncertainty
+          - "growing"      # clear growth, increasing competition
+          - "mature"       # stable, consolidation happening
+          - "declining"    # shrinking, disruption occurring
+      key_dynamics:
+        type: "list[string]"
+        description: "Forces shaping this market"
+        example:
+          - "Digital transformation driving adoption"
+          - "Price sensitivity limiting willingness to pay"
+      open_questions:
+        type: "list[string]"
+        description: "What we don't know about this market"
+        example:
+          - "Is growth sustainable or bubble?"
+          - "Regulatory risk?"
+
+  competitor:
+    description: "A company or product competing in the same space"
+    fields:
+      name:
+        type: "string"
+        required: true
+      what_they_do:
+        type: "string"
+        description: "Their core offering in one sentence"
+      strengths:
+        type: "list[string]"
+        max_items: 5
+      weaknesses:
+        type: "list[string]"
+        max_items: 5
+      positioning:
+        type: "string"
+        description: "How they position themselves"
+      threat_level:
+        type: "enum"
+        values:
+          - "direct"      # same market, same customers
+          - "indirect"    # different approach, same need
+          - "potential"   # could enter if market grows
+      what_we_can_learn:
+        type: "list[string]"
+        description: "Lessons from their success or failure"
+
+  opportunity:
+    description: "A potential business opportunity"
+    fields:
+      description:
+        type: "string"
+        required: true
+      target_market:
+        type: "string"
+        description: "Which market/entity this targets"
+      why_now:
+        type: "string"
+        required: true
+        description: "What changed that makes this viable now"
+      our_advantage:
+        type: "string"
+        description: "Why we specifically can capture this"
+      key_assumptions:
+        type: "list[string]"
+        required: true
+        description: "If any of these are wrong, the opportunity collapses"
+      barriers:
+        type: "list[string]"
+        description: "What prevents easy entry"
+      estimated_effort:
+        type: "enum"
+        values:
+          - "days"
+          - "weeks"
+          - "months"
+          - "quarters"
+      resource_requirements:
+        type: "list[string]"
+        description: "What resources are needed"
+
+  technology:
+    description: "A technology trend or capability"
+    fields:
+      name:
+        type: "string"
+        required: true
+      current_state:
+        type: "string"
+        description: "Where this technology is today"
+      trajectory:
+        type: "enum"
+        values:
+          - "rapidly_improving"
+          - "steadily_improving"
+          - "plateauing"
+          - "declining"
+          - "uncertain"
+      relevance_to_us:
+        type: "string"
+        description: "How this connects to our goals"
+      leverage_potential:
+        type: "string"
+        description: "How we could use this"
+      risk_factors:
+        type: "list[string]"
+        description: "What could go wrong with depending on this"
+
+  resource:
+    description: "Available resource"
+    fields:
+      type:
+        type: "enum"
+        values:
+          - "money"
+          - "time"
+          - "skill"
+          - "network"
+          - "reputation"
+          - "data"
+      current_amount:
+        type: "string"
+        description: "Natural language: '3 months runway' not '¥150,000'"
+      constraints:
+        type: "string"
+        description: "Limitations on this resource"
+      replenishment:
+        type: "string"
+        description: "How to get more"
+      allocation_priority:
+        type: "string"
+        description: "What this resource is reserved for"
+
+  customer_segment:
+    description: "A group of customers with shared needs"
+    fields:
+      name:
+        type: "string"
+        required: true
+      needs:
+        type: "list[string]"
+        required: true
+        description: "What they need (not what we want to sell them)"
+      current_solution:
+        type: "string"
+        description: "How they solve this today"
+      pain_points:
+        type: "list[string]"
+        description: "What's broken about current solution"
+      willingness_to_pay:
+        type: "string"
+        description: "Natural language assessment"
+      acquisition_channels:
+        type: "list[string]"
+        description: "How to reach them"
+
+# ─────────────────────────────────────────────────────────────
+# Relation Types
+# Finite set. Extend only with explicit justification.
+# ─────────────────────────────────────────────────────────────
+relations:
+  allowed_types:
+    competition:
+      - "competes_with"          # direct competition
+      - "serves_same_market"     # indirect competition
+    opportunity:
+      - "enables"                # X makes Y possible
+      - "requires"               # X needs Y to exist
+      - "targets"                # X is aimed at Y
+    risk:
+      - "threatens"              # X endangers Y
+      - "depends_on"             # X relies on Y
+    learning:
+      - "similar_to"             # X resembles Y (for analogy)
+      - "learned_from"           # X was informed by Y
+
+  schema:
+    id:
+      type: "string"
+      format: "uuid"
+    source_id:
+      type: "string"
+      description: "Entity ID"
+    target_id:
+      type: "string"
+      description: "Entity ID"
+    relation_type:
+      type: "enum"
+      values: "${allowed_types}"
+    description:
+      type: "string"
+      description: "Natural language explanation of this relation"
+    directionality:
+      type: "enum"
+      values:
+        - "directed"     # A → B
+        - "bidirectional" # A ↔ B
+
+# ─────────────────────────────────────────────────────────────
+# Confidence System
+# How we calculate, decay, and update confidence
+# ─────────────────────────────────────────────────────────────
+confidence:
+
+  # Source base confidence — where beliefs start
+  source_base:
+    user_direct_observation: 0.85
+    user_experience: 0.75
+    user_assumption: 0.50
+    system_inference: 0.40
+    external_data: 0.70
+    analogy: 0.35
+
+  # Evidence strength boost — added to base
+  evidence_boost:
+    strong: 0.15
+    moderate: 0.08
+    weak: 0.03
+
+  # Time decay — confidence decreases without re-validation
+  decay:
+    half_life_days: 90
+    min_confidence: 0.10
+    max_confidence: 0.95
+    formula: "confidence * 0.5 ^ (days_since_validation / half_life_days)"
+
+  # Compound confidence — multiple beliefs supporting a conclusion
+  compound:
+    method: "conservative_multiply"
+    independence_factor: 0.8
+    reason: "Beliefs are rarely truly independent"
+
+  # Thresholds
+  thresholds:
+    high_confidence: 0.7
+    medium_confidence: 0.4
+    low_confidence: 0.2
+    auto_question: 0.3      # Below this, mark as "questioned"
+
+# ─────────────────────────────────────────────────────────────
+# Update Mechanism
+# How the World Model changes over time
+# ─────────────────────────────────────────────────────────────
+update_mechanism:
+
+  # New belief ingestion
+  ingest:
+    steps:
+      - "Extract entities and relations from input"
+      - "Check for contradictions with existing beliefs"
+      - "If contradiction: record, don't auto-resolve"
+      - "Calculate initial confidence from source + evidence"
+      - "Store belief"
+
+  # Contradiction handling
+  contradictions:
+    detection: "automatic"
+    resolution: "user_required"
+    statuses:
+      - "unresolved"        # Detected but not addressed
+      - "resolved"          # User chose one belief over another
+      - "accepted_tension"  # Both can coexist (e.g., market growing but risky)
+    priority: "high"        # Always surface contradictions to user
+
+  # Blind spot detection
+  blind_spots:
+    enabled: true
+    method: "coverage_analysis"
+    triggers:
+      - "entity type has 0 entries while related types have 3+"
+      - "key assumption has no supporting evidence"
+      - "opportunity exists but no customer_segment data"
+    action: "surface to user as question"
+
+  # Assumption challenging
+  assumptions:
+    enabled: true
+    method: "dependency_analysis"
+    triggers:
+      - "belief depends on assumption that has low confidence"
+      - "multiple beliefs share same unvalidated assumption"
+    action: "suggest validation plan"
+
+# ─────────────────────────────────────────────────────────────
+# Integration Points
+# ─────────────────────────────────────────────────────────────
+integration:
+  provides_to:
+    strategy_engine:
+      - "market beliefs for market selection"
+      - "competitor beliefs for positioning"
+      - "opportunity beliefs for opportunity evaluation"
+      - "resource beliefs for feasibility assessment"
+    decision_engine:
+      - "all beliefs as BDI Beliefs component"
+      - "confidence scores for risk assessment"
+      - "contradictions for slow thinking triggers"
+    identity_core:
+      - "belief outcomes for identity evolution signals"
+
+  receives_from:
+    identity_core:
+      - "core_values for belief prioritization"
+    execution:
+      - "outcomes that validate or invalidate beliefs"
+    external:
+      - "market data, news, signals (V2)"

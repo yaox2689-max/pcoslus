@@ -1,0 +1,388 @@
+# PCOS Disagreement Test
+# 20 scenarios designed to expose PCOS weaknesses
+# Each scenario has REAL tradeoffs - not obvious answers
+
+benchmark:
+  version: "disagreement_v1"
+  description: "Scenarios where PCOS and user might disagree"
+  evaluation_criteria:
+    - "Does PCOS identify value conflicts?"
+    - "Does PCOS provide counter-arguments?"
+    - "Does PCOS use beliefs for reasoning (not repetition)?"
+    - "Are scores differentiated (not all 0.7-0.8)?"
+
+scenarios:
+
+  # ─────────────────────────────────────────────────────────────
+  # CAREER DECISIONS (Real tradeoffs)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D01"
+    category: "career"
+    context: |
+      You have 1000 hours to invest in learning over the next 12 months.
+      Option A: 1000 hours AI/ML
+      Option B: 700 hours AI + 300 hours Java
+      Option C: 500 hours AI + 500 hours Java
+      You want to maximize career options and long-term income.
+    decision: "How to allocate 1000 learning hours?"
+    options:
+      - "A) 1000 hours AI only"
+      - "B) 700 AI + 300 Java"
+      - "C) 500 AI + 500 Java"
+    expected_conflicts:
+      gains: ["creativity", "learning", "impact"]
+      losses: ["career_security", "marketability"]
+    expected_counter: "Java still powers 90% of enterprise systems. Pure AI specialization may limit job options if AI hype fades."
+
+  - id: "D02"
+    category: "career"
+    context: |
+      You're a senior backend engineer. Two job offers:
+      Offer A: AI startup, 30% pay cut, equity, high learning
+      Offer B: Big tech, stable, good pay, Java/backend focus
+      You have 6 months expenses saved.
+    decision: "Which job offer to accept?"
+    options:
+      - "A) AI startup (30% pay cut, equity)"
+      - "B) Big tech (stable, Java/backend)"
+    expected_conflicts:
+      gains: ["creativity", "learning", "autonomy"]
+      losses: ["economic_resilience", "career_security"]
+    expected_counter: "6 months runway is risky. Startup equity is lottery ticket. Big tech provides stability and brand value."
+
+  # ─────────────────────────────────────────────────────────────
+  # STARTUP DECISIONS (Resource constraints)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D03"
+    category: "startup"
+    context: |
+      You have $50K runway. Two paths:
+      Path A: Build AI product (3 months to MVP, uncertain market)
+      Path B: Consulting (immediate revenue, slower product development)
+      Goal: Build a sustainable business
+    decision: "How to use $50K runway?"
+    options:
+      - "A) Full-time AI product development"
+      - "B) Consulting + part-time product"
+      - "C) 3 months consulting, then full-time product"
+    expected_conflicts:
+      gains: ["creativity", "autonomy"]
+      losses: ["economic_resilience", "career_security"]
+    expected_counter: "Consulting provides market validation AND revenue. Pure product play is high risk with limited runway."
+
+  - id: "D04"
+    category: "startup"
+    context: |
+      VC offers $500K seed for 20% equity + board seat.
+      Current runway: 6 months, growing 20% MoM.
+      You value control and long-term thinking.
+    decision: "Accept VC funding?"
+    options:
+      - "A) Accept $500K (20% equity + board)"
+      - "B) Negotiate to 10% equity, no board"
+      - "C) Decline, stay bootstrapped"
+    expected_conflicts:
+      gains: ["economic_resilience", "impact"]
+      losses: ["autonomy", "long_term_control"]
+    expected_counter: "VC money accelerates growth but reduces control. Bootstrapping preserves autonomy but limits scale."
+
+  # ─────────────────────────────────────────────────────────────
+  # PRODUCT DECISIONS (Scope vs Speed)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D05"
+    category: "product"
+    context: |
+      Users request 4 features. You can build 2 in next sprint:
+      1. Multi-language (current users are English)
+      2. Custom workflow (most requested)
+      3. Analytics dashboard (nice-to-have)
+      4. API integration (enables ecosystem)
+    decision: "Which 2 features to build?"
+    options:
+      - "A) Custom workflow + API integration"
+      - "B) Custom workflow + Multi-language"
+      - "C) Analytics + API integration"
+    expected_conflicts:
+      gains: ["creativity", "impact"]
+      losses: ["marketability"] (if multi-language deferred)
+    expected_counter: "Multi-language expands market. API integration is technical debt until you have users."
+
+  - id: "D06"
+    category: "product"
+    context: |
+      MVP is ready. Competitor launching in 6 weeks.
+      Option A: Launch now (basic features)
+      Option B: Wait 4 weeks for key features
+      Users want feature X (2 weeks to build)
+    decision: "Launch now or wait?"
+    options:
+      - "A) Launch now (basic MVP)"
+      - "B) Wait 4 weeks for features"
+      - "C) Launch now + fast-iterate"
+    expected_conflicts:
+      gains: ["learning", "marketability"]
+      losses: ["creativity"] (if launch rushed)
+    expected_counter: "First-mover advantage matters. But launching broken product damages reputation."
+
+  # ─────────────────────────────────────────────────────────────
+  # INVESTMENT DECISIONS (Risk vs Return)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D07"
+    category: "investment"
+    context: |
+      $10K to invest. Options:
+      A: Paid ads (uncertain ROI, fast feedback)
+      B: Hire part-time dev (increases capacity)
+      C: Conference networking (exposure, uncertain return)
+      D: Save for runway (safety)
+    decision: "How to invest $10K?"
+    options:
+      - "A) Paid advertising"
+      - "B) Hire part-time developer"
+      - "C) Conference networking"
+      - "D) Save for runway"
+    expected_conflicts:
+      gains: ["learning", "impact"]
+      losses: ["economic_resilience"]
+    expected_counter: "Runway is life. Hiring reduces runway but increases capacity. Ads have uncertain ROI."
+
+  - id: "D08"
+    category: "investment"
+    context: |
+      Crypto/stock investment opportunity:
+      A: $5K in AI stocks (high volatility, high potential)
+      B: $5K in index funds (stable, 7% annual)
+      C: $5K in your own business (highest control)
+    decision: "How to invest $5K?"
+    options:
+      - "A) AI stocks (high volatility)"
+      - "B) Index funds (stable 7%)"
+      - "C) Your own business (highest control)"
+    expected_conflicts:
+      gains: ["autonomy", "economic_resilience"]
+      losses: ["economic_resilience"] (if business fails)
+    expected_counter: "Diversification reduces risk. Your business is already concentrated risk."
+
+  # ─────────────────────────────────────────────────────────────
+  # HIRING DECISIONS (Team vs Solo)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D09"
+    category: "hiring"
+    context: |
+      Potential co-founder: strong business dev (your weakness), no technical background.
+      Wants 40% equity. You're solo founder with 6 months runway.
+    decision: "Accept co-founder?"
+    options:
+      - "A) Accept 40% equity"
+      - "B) Negotiate to 25% equity"
+      - "C) Decline, stay solo"
+      - "D) Trial period first"
+    expected_conflicts:
+      gains: ["impact", "marketability"]
+      losses: ["autonomy", "economic_resilience"]
+    expected_counter: "40% is high for unproven partner. Solo founder has limitations but full control."
+
+  - id: "D10"
+    category: "hiring"
+    context: |
+      Need to hire: Junior dev ($3K/month) or Senior dev ($6K/month).
+      Budget: $4K/month. Project timeline: 3 months.
+    decision: "Hire junior or senior?"
+    options:
+      - "A) Junior dev ($3K/month)"
+      - "B) Senior dev ($6K/month, over budget)"
+      - "C) Both part-time"
+      - "D) Outsource to agency"
+    expected_conflicts:
+      gains: ["creativity", "learning"]
+      losses: ["economic_resilience"]
+    expected_counter: "Senior dev delivers faster but costs more. Junior needs mentorship. Agency has quality risk."
+
+  # ─────────────────────────────────────────────────────────────
+  # PIVOT DECISIONS (When to change direction)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D11"
+    category: "pivot"
+    context: |
+      Current product: 100 users, 20% active, 80% churn.
+      Active users love automation features.
+      Inactive users say "too complex".
+    decision: "Simplify for mass market or double down on power users?"
+    options:
+      - "A) Simplify for mass market"
+      - "B) Double down on power users"
+      - "C) Build two versions"
+    expected_conflicts:
+      gains: ["impact", "marketability"]
+      losses: ["creativity"] (if simplify)
+    expected_counter: "Power users are evangelists. Mass market requires different product."
+
+  - id: "D12"
+    category: "pivot"
+    context: |
+      Consulting business: 2 paying customers, learned SMEs need "quick deployment" not "assessment".
+      Competitor raised $5M. 3 months runway.
+    decision: "Pivot from consulting to product?"
+    options:
+      - "A) Full pivot to product now"
+      - "B) Continue consulting, build product parallel"
+      - "C) Continue consulting only"
+    expected_conflicts:
+      gains: ["creativity", "autonomy"]
+      losses: ["economic_resilience", "career_security"]
+    expected_counter: "Consulting provides income + market learning. Full pivot is high risk with limited runway."
+
+  # ─────────────────────────────────────────────────────────────
+  # ETHICAL DECISIONS (Values conflict)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D13"
+    category: "ethical"
+    context: |
+      Client offers $50K contract but wants you to:
+      - Use their competitor's data (gray area)
+      - Skip security review (faster launch)
+      - Not disclose AI usage to end users
+    decision: "Accept contract with conditions?"
+    options:
+      - "A) Accept as-is"
+      - "B) Negotiate to remove gray areas"
+      - "C) Decline contract"
+    expected_conflicts:
+      gains: ["economic_resilience"]
+      losses: ["autonomy", "impact"] (if accept)
+    expected_counter: "Short-term revenue vs long-term reputation. Ethical violations have compounding costs."
+
+  - id: "D14"
+    category: "ethical"
+    context: |
+      Your AI product could be used for:
+      A: Legitimate business automation
+      B: Content generation (could be misused)
+      C: Surveillance (high revenue, ethical concerns)
+    decision: "Which use case to focus on?"
+    options:
+      - "A) Business automation only"
+      - "B) Content generation (with safeguards)"
+      - "C) Surveillance (high revenue)"
+    expected_conflicts:
+      gains: ["impact", "economic_resilience"]
+      losses: ["autonomy"] (if surveillance)
+    expected_counter: "Surveillance pays well but creates reputational risk. Content generation has misuse potential."
+
+  # ─────────────────────────────────────────────────────────────
+  # TIMING DECISIONS (When to act)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D15"
+    category: "timing"
+    context: |
+      New AI model released: 10x better for your use case.
+      Integration takes 2 weeks, requires reworking features.
+      Current model works "good enough".
+    decision: "Switch to new model now?"
+    options:
+      - "A) Switch immediately"
+      - "B) Evaluate 1 week, then decide"
+      - "C) Wait 3 months for maturity"
+    expected_conflicts:
+      gains: ["learning", "creativity"]
+      losses: ["economic_resilience"] (if switch breaks things)
+    expected_counter: "10x improvement is significant but new models have bugs. Evaluation reduces risk."
+
+  - id: "D16"
+    category: "timing"
+    context: |
+      Opportunity to speak at major tech conference.
+      Takes 2 weeks to prepare. Conference in 6 weeks.
+      Product sprint ongoing. Exposure helps hiring.
+    decision: "Speak at conference?"
+    options:
+      - "A) Yes, full commitment"
+      - "B) Yes, minimal preparation"
+      - "C) Decline this year"
+    expected_conflicts:
+      gains: ["impact", "marketability"]
+      losses: ["creativity"] (product delayed)
+    expected_counter: "Exposure helps hiring and partnerships. But 2 weeks delays product."
+
+  # ─────────────────────────────────────────────────────────────
+  # RESOURCE DECISIONS (Allocation)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D17"
+    category: "resource"
+    context: |
+      Time split: currently 70% consulting, 30% product.
+      Consulting covers expenses. Product progressing slowly.
+      Could shift to 50/50 or 30/70.
+    decision: "How to split time?"
+    options:
+      - "A) Keep 70/30 (consulting/product)"
+      - "B) Shift to 50/50"
+      - "C) Shift to 30/70"
+    expected_conflicts:
+      gains: ["creativity", "autonomy"]
+      losses: ["economic_resilience"]
+    expected_counter: "More product time = more risk. Consulting provides stability + market learning."
+
+  - id: "D18"
+    category: "resource"
+    context: |
+      Health: working 70-hour weeks for 6 months. Product growing but exhausted.
+      Options: vacation, hire help, reduce scope, push through.
+    decision: "How to address burnout?"
+    options:
+      - "A) Take 1-week vacation"
+      - "B) Hire help"
+      - "C) Reduce product scope"
+      - "D) Push through"
+    expected_conflicts:
+      gains: ["economic_resilience"] (if push through)
+      losses: ["creativity", "learning"] (if exhausted)
+    expected_counter: "Burnout affects long-term productivity. Vacation provides recovery but delays growth."
+
+  # ─────────────────────────────────────────────────────────────
+  # MARKET DECISIONS (Where to play)
+  # ─────────────────────────────────────────────────────────────
+
+  - id: "D19"
+    category: "market"
+    context: |
+      Two markets:
+      A: Enterprise HR (large market, long sales cycles, need sales skills)
+      B: SME customer service (growing, short cycles, technical strength)
+      You have limited sales experience.
+    decision: "Which market to focus on?"
+    options:
+      - "A) Enterprise HR"
+      - "B) SME Customer Service"
+      - "C) Both"
+    expected_conflicts:
+      gains: ["impact", "economic_resilience"]
+      losses: ["creativity"] (if enterprise boring)
+    expected_counter: "Enterprise has higher ACV but needs sales skills. SME has shorter cycles but lower margins."
+
+  - id: "D20"
+    category: "market"
+    context: |
+      International expansion options:
+      A: Southeast Asia (growing, price-sensitive)
+      B: Europe (mature, high WTP, compliance heavy)
+      C: Latin America (emerging, relationship-driven)
+    decision: "Which market to expand to first?"
+    options:
+      - "A) Southeast Asia"
+      - "B) Europe"
+      - "C) Latin America"
+      - "D) Stay domestic"
+    expected_conflicts:
+      gains: ["impact", "marketability"]
+      losses: ["economic_resilience"] (if expansion fails)
+    expected_counter: "International expansion is expensive. Domestic focus allows deeper penetration."
