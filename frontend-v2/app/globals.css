@@ -1,0 +1,272 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=ZCOOL+KuaiLe&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #ff9e99;
+  --primary-light: #ffb7b2;
+  --secondary-color: #ffdac1;
+  --accent-color: #e2f0cb;
+  --bg-color: #fff5f5;
+  --text-color: #6d6875;
+  --text-light: #a5a5a5;
+  --white: #ffffff;
+  --sidebar-bg: #fff0f0;
+  --shadow: 0 8px 24px rgba(255, 183, 178, 0.2);
+  --border-radius: 20px;
+  --transition: all 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Nunito', 'Microsoft YaHei', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Kawaii dot background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, #ffdac1 1px, transparent 1px),
+                    radial-gradient(circle, #e2f0cb 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  opacity: 0.3;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #ccc; }
+
+/* Animations */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes thinking-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Utility classes */
+.animate-slide-up { animation: slideUp 0.3s ease-out; }
+.animate-slide-in-right { animation: slideInRight 0.3s ease-out; }
+.animate-fade-in { animation: fadeIn 0.3s ease-out; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-bounce-slow { animation: bounce 2s infinite; }
+.animate-pulse-soft { animation: pulseSoft 2s infinite; }
+
+/* Stagger delays */
+.stagger-1 { animation-delay: 0.1s; opacity: 0; animation-fill-mode: forwards; }
+.stagger-2 { animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards; }
+.stagger-3 { animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards; }
+.stagger-4 { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
+.stagger-5 { animation-delay: 0.5s; opacity: 0; animation-fill-mode: forwards; }
+
+/* Kawaii card */
+.kawaii-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 158, 153, 0.15);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.kawaii-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(255, 183, 178, 0.3);
+}
+
+/* Kawaii button primary */
+.btn-kawaii-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 28px;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(255, 158, 153, 0.3);
+}
+
+.btn-kawaii-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 158, 153, 0.4);
+}
+
+.btn-kawaii-primary:disabled {
+  background: #e0e0e0;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Kawaii button secondary */
+.btn-kawaii-secondary {
+  background: var(--secondary-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 25px;
+  padding: 10px 24px;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-kawaii-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 218, 193, 0.4);
+}
+
+/* Input kawaii */
+.input-kawaii {
+  background: #f9f9f9;
+  border: 2px solid transparent;
+  border-radius: 25px;
+  padding: 14px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  transition: var(--transition);
+  width: 100%;
+}
+
+.input-kawaii:focus {
+  outline: none;
+  background: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(255, 158, 153, 0.15);
+}
+
+.input-kawaii::placeholder {
+  color: var(--text-light);
+}
+
+/* Textarea kawaii */
+.textarea-kawaii {
+  background: #f9f9f9;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  padding: 16px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  transition: var(--transition);
+  width: 100%;
+  resize: none;
+}
+
+.textarea-kawaii:focus {
+  outline: none;
+  background: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(255, 158, 153, 0.15);
+}
+
+.textarea-kawaii::placeholder {
+  color: var(--text-light);
+}
+
+/* Message bubble */
+.msg-bot {
+  background: #f0f8ff;
+  border-radius: 20px 20px 20px 5px;
+  padding: 16px 20px;
+  max-width: 85%;
+  animation: slideUp 0.3s ease-out;
+}
+
+.msg-user {
+  background: var(--primary-light);
+  color: white;
+  border-radius: 20px 20px 5px 20px;
+  padding: 16px 20px;
+  max-width: 85%;
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Score bar */
+.score-bar {
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  transition: width 0.8s ease;
+}
+
+/* Badge */
+.badge-kawaii {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Thinking dots */
+.thinking-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  animation: thinking-bounce 1.4s infinite ease-in-out both;
+}
+
+.thinking-dot:nth-child(1) { animation-delay: -0.32s; }
+.thinking-dot:nth-child(2) { animation-delay: -0.16s; }
+.thinking-dot:nth-child(3) { animation-delay: 0s; }
