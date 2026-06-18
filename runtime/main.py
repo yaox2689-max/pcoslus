@@ -8,6 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import decide
 from .routers.dashboard import router as dashboard_router
+from .routers.outcome import router as outcome_router
+from .routers.reflection import router as reflection_router
 from .config import get_config
 
 
@@ -29,6 +31,8 @@ app.add_middleware(
 # Mount routers
 app.include_router(decide.router)
 app.include_router(dashboard_router)
+app.include_router(outcome_router)
+app.include_router(reflection_router)
 
 
 @app.on_event("startup")
